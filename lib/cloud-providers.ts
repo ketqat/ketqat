@@ -9,6 +9,20 @@ export interface QuantumProvider {
 
 export const QUANTUM_PROVIDERS: QuantumProvider[] = [
     {
+        id: "ibm-quantum",
+        name: "IBM Quantum",
+        url: "https://quantum.cloud.ibm.com/",
+        description: "Access IBM's utility-scale superconducting quantum computers and Qiskit Runtime services directly.",
+        category: "Hardware",
+    },
+    {
+        id: "aws-braket",
+        name: "Amazon Braket",
+        url: "https://us-east-1.console.aws.amazon.com/braket/",
+        description: "A fully managed service that provides access to different types of quantum hardware (IonQ, Rigetti, QuEra) through a single interface.",
+        category: "Cloud",
+    },
+    {
         id: "iqm-resonance",
         name: "IQM Resonance",
         url: "https://resonance.meetiqm.com/",
