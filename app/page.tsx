@@ -9,6 +9,8 @@ import { Separator } from "@/components/ui/separator"
 import { getTrendingDecoders } from "@/lib/mock-data"
 import { QUANTUM_PROVIDERS } from "@/lib/cloud-providers"
 import { ProviderCard } from "@/components/cloud/provider-card"
+import { CAREER_RESOURCES } from "@/lib/career-resources"
+import { ResourceCard } from "@/components/career/resource-card"
 import { ArrowRight } from "lucide-react"
 
 export default function HomePage() {
@@ -83,6 +85,27 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {QUANTUM_PROVIDERS.map((provider) => (
             <ProviderCard key={provider.id} provider={provider} />
+          ))}
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4">
+        <Separator className="my-12" />
+      </div>
+
+      {/* Careers & Community Section */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold">Careers & Community</h2>
+            <p className="text-muted-foreground mt-2">
+              Find jobs and challenges to advance your quantum journey.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {CAREER_RESOURCES.map((resource) => (
+            <ResourceCard key={resource.id} resource={resource} />
           ))}
         </div>
       </section>
