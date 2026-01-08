@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation"
 import { SearchBar } from "@/components/SearchBar"
 import { DecoderCard } from "@/components/DecoderCard"
 import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
 import { getTrendingDecoders } from "@/lib/mock-data"
+import { QUANTUM_PROVIDERS } from "@/lib/cloud-providers"
+import { ProviderCard } from "@/components/cloud/provider-card"
 import { ArrowRight } from "lucide-react"
 
 export default function HomePage() {
@@ -75,6 +78,35 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trendingDecoders.map((decoder) => (
             <DecoderCard key={decoder.id} decoder={decoder} />
+          ))}
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4">
+        <Separator className="my-8" />
+      </div>
+
+      {/* Quantum Cloud Hub Section */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-3xl font-bold">Quantum Cloud Hub</h2>
+            <p className="text-muted-foreground mt-2">
+              Connect and manage your quantum infrastructure.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/cloud")}
+            className="gap-2"
+          >
+            View All Providers
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {QUANTUM_PROVIDERS.map((provider) => (
+            <ProviderCard key={provider.id} provider={provider} />
           ))}
         </div>
       </section>
