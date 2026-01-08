@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "KetQat - The Home for Quantum Error Correction",
   description: "An open-source platform where researchers can share, discover, and collaborate on Quantum Error Correction (QEC) decoders, quantum circuits, and noise data.",
+  icons: {
+    icon: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
