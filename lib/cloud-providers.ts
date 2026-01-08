@@ -92,4 +92,11 @@ export const QUANTUM_PROVIDERS: QuantumProvider[] = [
         description: "Development tools and middleware for designing and running algorithms on fault-tolerant quantum computers.",
         category: "Software",
     },
+    {
+        id: "qbraid",
+        name: "qBraid",
+        url: "https://account.qbraid.com/",
+        description: "A comprehensive cloud platform for developing, running, and deploying quantum jobs across various hardware providers using a unified interface.",
+        category: "Cloud",
+    },
 ];
