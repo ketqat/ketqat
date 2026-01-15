@@ -1,12 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { SearchBar } from "@/components/SearchBar"
-import { DecoderCard } from "@/components/DecoderCard"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { getTrendingDecoders } from "@/lib/mock-data"
 import { QUANTUM_PROVIDERS } from "@/lib/cloud-providers"
 import { ProviderCard } from "@/components/cloud/provider-card"
 
@@ -14,16 +9,6 @@ import { ArrowRight } from "lucide-react"
 
 export default function HomePage() {
   const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const trendingDecoders = getTrendingDecoders(6)
-
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      router.push(`/decoders?search=${encodeURIComponent(searchQuery)}`)
-    } else {
-      router.push("/decoders")
-    }
-  }
 
   return (
     <div className="min-h-screen">
@@ -37,29 +22,6 @@ export default function HomePage() {
             Discover, share, and collaborate on QEC decoders, quantum circuits, and noise data.
             Join the open-source quantum computing community.
           </p>
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="flex gap-2">
-              <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search for decoders, circuits, or datasets..."
-                className="flex-1"
-              />
-              <Button onClick={handleSearch} className="px-6">
-                Search
-              </Button>
-            </div>
-          </div>
-          <div className="flex justify-center gap-4">
-            <Button
-              variant="outline"
-              onClick={() => router.push("/decoders")}
-              className="gap-2"
-            >
-              Browse All Decoders
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -84,32 +46,6 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {QUANTUM_PROVIDERS.map((provider) => (
             <ProviderCard key={provider.id} provider={provider} />
-          ))}
-        </div>
-      </section>
-
-
-
-      <div className="container mx-auto px-4">
-        <Separator className="my-12" />
-      </div>
-
-      {/* Trending Decoders Section */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Trending Decoders</h2>
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/decoders")}
-            className="gap-2"
-          >
-            View All
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trendingDecoders.map((decoder) => (
-            <DecoderCard key={decoder.id} decoder={decoder} />
           ))}
         </div>
       </section>

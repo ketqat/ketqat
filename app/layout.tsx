@@ -27,11 +27,6 @@ export default function RootLayout({
               <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-quantum-blue to-quantum-orange bg-clip-text text-transparent">
                 KetQat
               </Link>
-              <div className="flex items-center gap-6">
-                <Link href="/decoders" className="text-sm font-medium hover:text-quantum-blue transition-colors">
-                  Decoder Zoo
-                </Link>
-              </div>
             </div>
           </div>
         </nav>
