@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QUANTUM_PROVIDERS } from "@/lib/cloud-providers"
 import { ProviderCard } from "@/components/cloud/provider-card"
 
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Github } from "lucide-react"
 
 export default function HomePage() {
   const router = useRouter()
@@ -115,6 +115,42 @@ export default function HomePage() {
                 Collaborate with the global quantum computing community.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Get Involved Section */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Get Involved</h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Fork us on GitHub and help build the future of quantum error correction. 
+            We encourage you to fork this repository and contribute to the open-source project.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button
+              size="lg"
+              className="gap-2"
+              asChild
+            >
+              <a 
+                href="https://github.com/ketqat/ketqat" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Github className="h-5 w-5" />
+                Fork on GitHub
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2"
+              onClick={() => router.push("/cloud")}
+            >
+              View Cloud Hub
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </section>

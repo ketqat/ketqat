@@ -6,6 +6,8 @@ Thank you for your interest in contributing to KetQat! We're excited to have you
 
 KetQat is an open-source project that thrives on community contributions. Whether you're fixing bugs, adding features, improving documentation, or sharing feedback, your contributions help make KetQat better for everyone. We appreciate your time and effort!
 
+**We encourage you to fork this repository and contribute to this open-source project. Your contributions help make KetQat better for everyone!** Every contribution, no matter how small, makes a difference and helps advance the field of quantum error correction.
+
 ## How to Contribute
 
 There are many ways to contribute to KetQat:
@@ -131,4 +133,4 @@ We're here to help and want to make contributing as smooth as possible!
 
 Please be respectful and considerate in all interactions. We're all here to build something great together.
 
-Thank you for contributing to KetQat! 🚀
+Thank you for considering contributing to KetQat. Every contribution, no matter how small, makes a difference! We're excited to see what you'll build with us. 🚀

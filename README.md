@@ -86,7 +86,9 @@ npm start
 
 ## Contributing
 
-We welcome contributions from the community! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+We encourage you to fork this repository and contribute to the open-source project. Your contributions, whether they're bug fixes, new features, documentation improvements, or feedback, are welcome and valued. Together, we can make KetQat better for the entire quantum computing community.
+
+Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
 
 ## License
 
