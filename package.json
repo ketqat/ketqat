@@ -1,9 +1,12 @@
 {
   "name": "ketqat",
   "version": "0.1.0",
-  "private": true,
+  "description": "The Home for Quantum Error Correction - An open-source platform for sharing decoders and connecting to quantum cloud providers.",
+  "author": "KetQat Contributors",
+  "license": "Apache-2.0",
+  "repository": "github.com/username/ketqat",
   "scripts": {
-    "dev": "next dev -p 3042",
+    "dev": "next dev -H 0.0.0.0 -p 3042",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
