@@ -24,11 +24,10 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-quantum-blue to-quantum-orange bg-clip-text text-transparent">
-            The Home for Quantum Error Correction
+            The Home for Quantum Computing
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Discover, share, and collaborate on QEC decoders, quantum circuits, and noise data.
-            Join the open-source quantum computing community.
+            Discover cloud providers, run algorithms, and collaborate on the future of quantum technology. Join the open-source community.
           </p>
         </div>
       </section>
@@ -124,7 +123,7 @@ export default function HomePage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Get Involved</h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Fork us on GitHub and help build the future of quantum error correction. 
+            Fork us on GitHub and help build the future of quantum computing. 
             We encourage you to fork this repository and contribute to the open-source project.
           </p>
           <div className="flex justify-center gap-4">

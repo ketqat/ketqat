@@ -1,16 +1,16 @@
 # KetQat
 
-**The Home for Quantum Error Correction**
+**The Home for Quantum Computing**
 
-KetQat is an open-source platform for sharing Quantum Error Correction (QEC) decoders and connecting to quantum cloud providers. Whether you're a researcher, developer, or quantum computing enthusiast, KetQat provides a centralized hub for discovering, sharing, and collaborating on QEC decoders, quantum circuits, and noise data.
+KetQat is an open-source platform for connecting with quantum cloud providers, sharing algorithms, and collaborating on quantum computing research. Whether you're a researcher, developer, or quantum computing enthusiast, KetQat provides a centralized hub for discovering quantum resources, running algorithms, and collaborating on the future of quantum technology.
 
 ## About
 
-KetQat serves as a community-driven platform that bridges the gap between quantum error correction research and practical implementation. The platform enables researchers and developers to:
+KetQat serves as a community-driven platform that bridges the gap between quantum computing research and practical implementation. The platform enables researchers and developers to:
 
-- **Share QEC Decoders**: Upload and share your quantum error correction decoders with the global quantum computing community
 - **Connect to Quantum Clouds**: Seamlessly connect to major quantum cloud providers including IBM Quantum, AWS Braket, IonQ, Quantinuum, and many others
-- **Discover Resources**: Browse a curated collection of decoders, circuits, and datasets contributed by researchers worldwide
+- **Share Algorithms**: Upload and share your quantum algorithms and research with the global quantum computing community
+- **Discover Resources**: Browse a curated collection of quantum computing resources, tools, and datasets contributed by researchers worldwide
 - **Collaborate**: Engage with the open-source quantum computing community through contributions, discussions, and partnerships
 
 ## Features
