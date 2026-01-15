@@ -1,5 +1,7 @@
 # KetQat
 
+[![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/7gyEkhPt)
+
 **The Home for Quantum Computing**
 
 KetQat is an open-source platform for connecting with quantum cloud providers, sharing algorithms, and collaborating on quantum computing research. Whether you're a researcher, developer, or quantum computing enthusiast, KetQat provides a centralized hub for discovering quantum resources, running algorithms, and collaborating on the future of quantum technology.
