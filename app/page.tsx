@@ -1,7 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QUANTUM_PROVIDERS } from "@/lib/cloud-providers"
 import { ProviderCard } from "@/components/cloud/provider-card"
 
@@ -9,6 +11,12 @@ import { ArrowRight } from "lucide-react"
 
 export default function HomePage() {
   const router = useRouter()
+  const [selectedTab, setSelectedTab] = useState("all")
+
+  const allProviders = QUANTUM_PROVIDERS
+  const hardwareProviders = QUANTUM_PROVIDERS.filter(provider => provider.category === "Hardware")
+  const softwareProviders = QUANTUM_PROVIDERS.filter(provider => provider.category === "Software")
+  const cloudProviders = QUANTUM_PROVIDERS.filter(provider => provider.category === "Cloud")
 
   return (
     <div className="min-h-screen">
@@ -43,11 +51,42 @@ export default function HomePage() {
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {QUANTUM_PROVIDERS.map((provider) => (
-            <ProviderCard key={provider.id} provider={provider} />
-          ))}
-        </div>
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="all">All Providers</TabsTrigger>
+            <TabsTrigger value="hardware">Hardware</TabsTrigger>
+            <TabsTrigger value="software">Software</TabsTrigger>
+            <TabsTrigger value="cloud">Cloud</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all" className="mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allProviders.map((provider) => (
+                <ProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="hardware" className="mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {hardwareProviders.map((provider) => (
+                <ProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="software" className="mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {softwareProviders.map((provider) => (
+                <ProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="cloud" className="mt-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {cloudProviders.map((provider) => (
+                <ProviderCard key={provider.id} provider={provider} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </section>
 
       {/* Features Section */}

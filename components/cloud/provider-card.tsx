@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ConnectDialog } from "./connect-dialog"
+import { cn } from "@/lib/utils"
 
 interface ProviderCardProps {
     provider: QuantumProvider
@@ -36,9 +37,39 @@ export function ProviderCard({ provider }: ProviderCardProps) {
         }
     }
 
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "operational":
+                return "bg-green-500"
+            case "degraded":
+                return "bg-yellow-500"
+            case "maintenance":
+                return "bg-red-500"
+            default:
+                return "bg-gray-500"
+        }
+    }
+
+    const getPricingVariant = (pricing: string) => {
+        switch (pricing) {
+            case "Free Tier":
+                return "default"
+            case "Paid":
+                return "secondary"
+            case "Contact":
+                return "outline"
+            default:
+                return "outline"
+        }
+    }
+
     return (
-        <Card className="flex flex-col h-full hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="flex flex-col h-full hover:shadow-md transition-shadow relative">
+            {/* Status Indicator */}
+            <div className={cn("absolute top-4 right-4 w-2 h-2 rounded-full", getStatusColor(provider.status))} 
+                 title={provider.status.charAt(0).toUpperCase() + provider.status.slice(1)} />
+            
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pr-8">
                 <CardTitle className="text-lg font-bold flex items-center gap-2">
                     <div className="p-2 bg-muted rounded-full">
                         {getIcon(provider.category)}
@@ -50,9 +81,25 @@ export function ProviderCard({ provider }: ProviderCardProps) {
                 </Badge>
             </CardHeader>
             <CardContent className="flex-1">
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed mb-3">
                     {provider.description}
                 </p>
+                
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                    {provider.tags.map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                        </Badge>
+                    ))}
+                </div>
+
+                {/* Pricing */}
+                <div className="mt-auto">
+                    <Badge variant={getPricingVariant(provider.pricing) as any} className="text-xs">
+                        {provider.pricing}
+                    </Badge>
+                </div>
             </CardContent>
             <CardFooter className="flex justify-between pt-4 border-t">
                 <ConnectDialog providerName={provider.name} />
