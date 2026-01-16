@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { QUANTUM_PROVIDERS } from "@/lib/cloud-providers"
@@ -23,8 +24,17 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-quantum-blue to-quantum-orange bg-clip-text text-transparent">
-            The Home for Quantum Computing
+          <h1 className="flex items-center justify-center gap-4 text-5xl md:text-6xl font-bold mb-6">
+            <Image 
+              src="/ketqat-icon.png" 
+              alt="KetQat" 
+              width={64} 
+              height={64}
+              className="object-contain"
+            />
+            <span className="bg-gradient-to-r from-quantum-blue to-quantum-orange bg-clip-text text-transparent">
+              The Home for Quantum Computing
+            </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
             Discover cloud providers, run algorithms, and collaborate on the future of quantum technology. Join the open-source community.
