@@ -1,6 +1,6 @@
 # KetQat
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/7gyEkhPt)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/KcJcRJv6pr)
 
 **The Home for Quantum Computing**
 
