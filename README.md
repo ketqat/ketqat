@@ -17,10 +17,6 @@ KetQat serves as a community-driven platform that bridges the gap between quantu
 
 ## Features
 
-### 🔬 Decoder Zoo
-
-Browse and discover Quantum Error Correction decoders from the community. Search by code type (surface code, color code, stabilizer, bosonic), qubit type (superconducting, trapped-ion, photonic, neutral-atom), and more. Each decoder includes detailed documentation, usage examples, and community ratings.
-
 ### ☁️ Quantum Cloud Hub
 
 Connect and manage access to quantum cloud providers in one place. KetQat supports integration with:
@@ -34,7 +30,7 @@ Connect and manage access to quantum cloud providers in one place. KetQat suppor
 
 ### 🎨 Modern UI
 
-Built with Next.js 14, TypeScript, and Tailwind CSS for a responsive, intuitive experience. The platform features a clean, modern interface that makes it easy to discover decoders, manage cloud connections, and contribute to the community.
+Built with Next.js 14, TypeScript, and Tailwind CSS for a responsive, intuitive experience. The platform features a clean, modern interface that makes it easy to manage cloud connections and contribute to the community.
 
 ## Tech Stack
 
@@ -91,6 +87,19 @@ npm start
 We encourage you to fork this repository and contribute to the open-source project. Your contributions, whether they're bug fixes, new features, documentation improvements, or feedback, are welcome and valued. Together, we can make KetQat better for the entire quantum computing community.
 
 Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to get started.
+
+## Roadmap
+
+### 🔬 Decoder Zoo (Planned)
+
+We're planning to add a Decoder Zoo feature that will allow you to browse and discover Quantum Error Correction decoders from the community. This feature will include:
+
+- Search by code type (surface code, color code, stabilizer, bosonic)
+- Filter by qubit type (superconducting, trapped-ion, photonic, neutral-atom)
+- Detailed documentation and usage examples for each decoder
+- Community ratings and reviews
+
+This feature is currently under development. Stay tuned for updates!
 
 ## License
 
