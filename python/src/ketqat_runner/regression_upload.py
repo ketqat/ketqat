@@ -146,6 +146,7 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
         request = Request(endpoint, data=payload, method='POST', headers={
             'Authorization': f'Bearer {token}', 'Content-Type': 'application/json',
             'Idempotency-Key': confirmed_sha256,
+            'User-Agent': 'KetQat-SDK regression-upload',
         })
         try:
             with opener.open(request, timeout=10) as response:

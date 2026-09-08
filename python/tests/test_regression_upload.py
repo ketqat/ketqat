@@ -95,7 +95,8 @@ def test_real_http_retry_and_confirmation_keep_original_verdict(tmp_path, monkey
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
             received.append((self.path, self.headers.get('Authorization'),
-                             self.headers.get('Idempotency-Key'), self.rfile.read(int(self.headers['Content-Length']))))
+                             self.headers.get('Idempotency-Key'), self.rfile.read(int(self.headers['Content-Length'])),
+                             self.headers.get('User-Agent')))
             self.send_response(503 if len(received) == 1 else 201)
             self.end_headers()
             self.wfile.write(json.dumps({'upload': 'STORED', 'verdict': 'REGRESSION', 'report_id': 'report-test-123'}).encode())
@@ -119,6 +120,7 @@ def test_real_http_retry_and_confirmation_keep_original_verdict(tmp_path, monkey
         assert received[0][0] == '/api/regression/repositories/repository-test/reports'
         assert received[0][1] == 'Bearer ' + os.environ['KETQAT_REGRESSION_TOKEN']
         assert received[0][2] == fingerprint
+        assert received[0][4] == 'KetQat-SDK regression-upload'
         for endpoint in ('http://example.com', 'https://example.com/path', 'https://user:secret@example.com'):
             with pytest.raises(ValueError):
                 upload(path, fingerprint, 'repository-test', endpoint)
