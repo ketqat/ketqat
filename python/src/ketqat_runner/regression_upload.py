@@ -22,8 +22,6 @@ MAX_UPLOAD_BYTES = 100 * 1024
 def validate_summary(payload: dict) -> None:
     schema = json.loads(files('ketqat_runner').joinpath('schemas/regression-summary.schema.json').read_text())
     Draft7Validator(schema).validate(payload)
-    if len(json.dumps(payload, allow_nan=False).encode()) > MAX_UPLOAD_BYTES:
-        raise ValueError('Summary exceeds 100 KiB.')
 
 
 def prepare_summary(local_report: dict) -> dict:
