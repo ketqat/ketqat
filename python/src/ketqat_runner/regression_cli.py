@@ -12,7 +12,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .regression import EXIT_CODES, Policy, Snapshot, capture, compare, load_json, not_executed, save_snapshot
+from .regression import EXIT_CODES, Policy, Snapshot, capture, compare, load_json, not_executed, save_snapshot, write_private_text
 from .regression_report import markdown, write_reports
 
 
@@ -124,7 +124,7 @@ def run(args) -> int:
         if args.regression_command == 'capture':
             return run_capture(args)
         if args.regression_command == 'sample':
-            args.output_dir.mkdir(parents=True, exist_ok=False)
+            args.output_dir.mkdir(parents=True, exist_ok=False, mode=0o700)
             try:
                 from qiskit import QuantumCircuit
             except ImportError:
@@ -140,7 +140,7 @@ def run(args) -> int:
             save_snapshot(b, args.output_dir / 'baseline.json')
             save_snapshot(c, args.output_dir / 'candidate.json')
             policy = Policy(resources={'two_qubit_gates': {}}, max_total_variation=0.05)
-            args.output_dir.joinpath('policy.json').write_text(policy.model_dump_json(indent=2) + '\n', encoding='utf-8')
+            write_private_text(args.output_dir / 'policy.json', policy.model_dump_json(indent=2) + '\n')
             report = compare(b, c, policy)
             report['sample'] = ('Intentional missing-CX mutation. Measured local simulation; not an observed Qiskit defect or customer incident.'
                                 if b.status == c.status == 'EXECUTED' else 'Intentional missing-CX example was not fully executed; inspect capture status. No successful simulation is claimed.')

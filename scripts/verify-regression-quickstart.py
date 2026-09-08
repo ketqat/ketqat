@@ -16,7 +16,7 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
-args.output.mkdir(parents=True, exist_ok=False)
+args.output.mkdir(parents=True, exist_ok=False, mode=0o700)
 root = Path(__file__).resolve().parents[1]
 
 def run(command, **kwargs):
@@ -55,5 +55,7 @@ with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
               'platform':platform.platform(),'wheel_sha256':hashlib.sha256(wheel.read_bytes()).hexdigest(),
               'dependencies':dependencies,'sample_exit_code':result.returncode,'verdict':report['verdict'],
               'uploads':0,'claim':'Maintainer engineering verification, not an independent customer trial.'}
-    (args.output/'evidence.json').write_text(json.dumps(evidence,indent=2)+'\n', encoding='utf-8')
+    fd = os.open(args.output/'evidence.json', os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    with os.fdopen(fd, 'w', encoding='utf-8') as handle:
+        handle.write(json.dumps(evidence,indent=2)+'\n')
     print(json.dumps(evidence,indent=2))
