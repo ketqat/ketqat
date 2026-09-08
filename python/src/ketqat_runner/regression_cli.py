@@ -131,7 +131,7 @@ def run(args) -> int:
             save_snapshot(b, args.output_dir / 'baseline.json')
             save_snapshot(c, args.output_dir / 'candidate.json')
             policy = Policy(resources={'two_qubit_gates': {}}, max_total_variation=0.05)
-            args.output_dir.joinpath('policy.json').write_text(policy.model_dump_json(indent=2) + '\n')
+            args.output_dir.joinpath('policy.json').write_text(policy.model_dump_json(indent=2) + '\n', encoding='utf-8')
             report = compare(b, c, policy)
             report['sample'] = ('Intentional missing-CX mutation. Measured local simulation; not an observed Qiskit defect or customer incident.'
                                 if b.status == c.status == 'EXECUTED' else 'Intentional missing-CX example was not fully executed; inspect capture status. No successful simulation is claimed.')

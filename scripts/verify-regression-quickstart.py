@@ -25,13 +25,16 @@ def run(command, **kwargs):
 with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
     temp = Path(tmp)
     env = dict(os.environ, UV_CACHE_DIR=str(temp/'cold-cache'))
-    run(['uv','build','--wheel','--out-dir',str(temp/'dist'),'python'],env=env)
-    wheel = next((temp/'dist').glob('*.whl'))
     started = time.monotonic()
     run(['uv','venv','--python','3.11',str(temp/'venv')],env=env)
     python = temp/'venv/bin/python'
     run(['uv','pip','install','--python',str(python),'--require-hashes',
          '-r','requirements-regression-py311.txt'],env=env)
+    run(['uv','pip','install','--python',str(python),'--require-hashes',
+         '-r','requirements-regression-build-py311.txt'],env=env)
+    run(['uv','build','--python',str(python),'--no-build-isolation','--wheel',
+         '--out-dir',str(temp/'dist'),'python'],env=env)
+    wheel = next((temp/'dist').glob('*.whl'))
     run(['uv','pip','install','--python',str(python),'--no-deps',str(wheel)],env=env)
     result = subprocess.run([str(temp/'venv/bin/ketqat'),'regression','sample',
                              '--output-dir',str(args.output.resolve()/'sample')],cwd=temp,env=env)
@@ -47,7 +50,7 @@ with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
     # The wheel's temporary file:// URL is local verification detail, not a
     # distributable installation claim.
     dependencies = '\n'.join(line for line in dependencies.splitlines() if not line.startswith('ketqat @'))
-    evidence={'method':'clean Python 3.11 virtualenv, cold uv package cache; real Qiskit ideal simulation',
+    evidence={'method':'clean Python 3.11 virtualenv, cold uv package cache; hashed runtime and build dependencies, source wheel build included; real Qiskit ideal simulation',
               'elapsed_seconds':round(elapsed,3),'target_seconds':600,'met_target':elapsed<=600,
               'platform':platform.platform(),'wheel_sha256':hashlib.sha256(wheel.read_bytes()).hexdigest(),
               'dependencies':dependencies,'sample_exit_code':result.returncode,'verdict':report['verdict'],
