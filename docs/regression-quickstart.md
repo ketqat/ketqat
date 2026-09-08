@@ -18,9 +18,15 @@ git rev-parse HEAD
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install --require-hashes -r requirements-regression-py311.txt
-python -m pip install --no-deps ./python
+python -m pip install --require-hashes -r requirements-regression-build-py311.txt
+python -m pip install --no-build-isolation --no-deps ./python
 ketqat regression sample --output-dir sample
 ```
+
+The build-backend lock pins Hatchling and its dependencies as well as the
+runtime lock. `--no-build-isolation` prevents an implicit, unpinned build-backend
+download. These locks target Python 3.11; record the interpreter and source
+commit alongside your report.
 
 **Expected exit: 1 (REGRESSION).** This is a deliberately removed CX gate from a
 Bell circuit, executed with real ideal simulation. It is not a reported Qiskit
