@@ -3,6 +3,8 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { zodToJsonSchema } from "zod-to-json-schema"
 import {
+  RegressionPolicySchema,
+  RegressionSummarySchema,
   AlgorithmBenchmarkResultSchema,
   AlgorithmExperimentManifestSchema,
   ArtifactRelationSchema,
@@ -43,6 +45,8 @@ mkdirSync(pythonSchemaDir, { recursive: true })
 
 /** Schemas the Python runner validates against, packaged inside the wheel. */
 const PYTHON_VALIDATED_SCHEMAS = new Set([
+  "regression-policy.schema.json",
+  "regression-summary.schema.json",
   "qec-experiment-manifest.schema.json",
   "algorithm-experiment-manifest.schema.json",
   "qec-benchmark-result.schema.json",
@@ -50,6 +54,8 @@ const PYTHON_VALIDATED_SCHEMAS = new Set([
 ])
 
 const schemas = {
+  "regression-policy.schema.json": RegressionPolicySchema,
+  "regression-summary.schema.json": RegressionSummarySchema,
   "artifact.schema.json": ArtifactSchema,
   "benchmark-suite.schema.json": BenchmarkSuiteSchema,
   "qec-experiment-manifest.schema.json": QecExperimentManifestSchema,

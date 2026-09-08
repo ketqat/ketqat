@@ -9,4 +9,5 @@ export * from "./experiment-manifest.js";
 export * from "./benchmark-result.js";
 export * from "./verification-evidence.js";
 export * from "./reproducibility-bundle.js";
+export * from "./regression.js";
 //# sourceMappingURL=index.js.map

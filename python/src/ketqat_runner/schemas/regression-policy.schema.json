@@ -1,0 +1,121 @@
+{
+  "$ref": "#/definitions/regression-policy",
+  "definitions": {
+    "regression-policy": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "ketqat.regression.policy.v1"
+        },
+        "changed_axes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "source_commit",
+              "circuit",
+              "qiskit"
+            ]
+          },
+          "maxItems": 3
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "depth": {
+              "type": "object",
+              "properties": {
+                "absolute_increase": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000000
+                },
+                "relative_increase": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Fraction: 0.1 means +10%, 1 means +100%."
+                }
+              },
+              "required": [
+                "absolute_increase",
+                "relative_increase"
+              ],
+              "additionalProperties": false
+            },
+            "size": {
+              "type": "object",
+              "properties": {
+                "absolute_increase": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000000
+                },
+                "relative_increase": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Fraction: 0.1 means +10%, 1 means +100%."
+                }
+              },
+              "required": [
+                "absolute_increase",
+                "relative_increase"
+              ],
+              "additionalProperties": false
+            },
+            "two_qubit_gates": {
+              "type": "object",
+              "properties": {
+                "absolute_increase": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000000
+                },
+                "relative_increase": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Fraction: 0.1 means +10%, 1 means +100%."
+                }
+              },
+              "required": [
+                "absolute_increase",
+                "relative_increase"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "max_total_variation": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "family_alpha": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "changed_axes",
+        "resources",
+        "max_total_variation",
+        "family_alpha"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

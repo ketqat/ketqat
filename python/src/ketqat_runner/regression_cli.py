@@ -35,7 +35,7 @@ def case_identifier(value: str) -> str:
 
 
 def add_parser(subcommands):
-    parser = subcommands.add_parser('regression', help='Capture and compare local Qiskit regression checks (no upload).')
+    parser = subcommands.add_parser('regression', help='Local Qiskit regression checks; optional previewed private summary upload.')
     commands = parser.add_subparsers(dest='regression_command', required=True)
     run = commands.add_parser('capture', help='Execute your own local Python circuit factory with a time limit.')
     run.add_argument('factory', help='Local path.py:function returning QuantumCircuit. Runs your code locally.')
@@ -52,6 +52,14 @@ def add_parser(subcommands):
     diff.add_argument('--output-dir', type=Path, required=True)
     sample = commands.add_parser('sample', help='Execute a labelled intentional Bell-circuit mutation locally.')
     sample.add_argument('--output-dir', type=Path, required=True)
+    preview = commands.add_parser('preview', help='Write an allowlisted summary for review; sends nothing.')
+    preview.add_argument('report', type=Path)
+    preview.add_argument('--output', type=Path, required=True)
+    upload = commands.add_parser('upload', help='Send exactly the reviewed summary using a scoped environment token.')
+    upload.add_argument('summary', type=Path)
+    upload.add_argument('--confirm-sha256', required=True)
+    upload.add_argument('--repository', required=True)
+    upload.add_argument('--server', default='https://ketqat.com')
 
 
 def worker(factory: str, case_id: str, output: Path, seed: int, level: int, shots: int | None):
@@ -121,6 +129,15 @@ def run_capture(args) -> int:
 
 def run(args) -> int:
     try:
+        if args.regression_command == 'preview':
+            from .regression_upload import preview
+            preview(args.report, args.output)
+            return 0
+        if args.regression_command == 'upload':
+            from .regression_upload import upload
+            result = upload(args.summary, args.confirm_sha256, args.repository, args.server)
+            print(f'UPLOAD: {result["upload"]}; COMPARISON: {result["verdict"]}; report {result["report_id"]}')
+            return 0
         if args.regression_command == 'capture':
             return run_capture(args)
         if args.regression_command == 'sample':
@@ -158,7 +175,20 @@ def run(args) -> int:
         return report['exit_code']
     except Exception as exc:
         # Validation exceptions can contain the invalid value (possibly private).
-        print(f'ERROR: {type(exc).__name__}. No successful report was produced. Check input schema, file paths and output-directory uniqueness.', file=sys.stderr)
+        if args.regression_command in ('upload', 'preview'):
+            from .regression_upload import RegressionUploadError
+            # Only authored transport errors (including subclasses) are safe to
+            # display. Arbitrary ValueError/validation details can contain input.
+            file_errors = {
+                FileNotFoundError: 'An input file or output directory was not found. Check the local paths and generate the required report or preview first.',
+                PermissionError: 'A local file or directory is not accessible. Check its read/write permissions before retrying.',
+                IsADirectoryError: 'A file path refers to a directory. Select the local report or preview file instead.',
+            }
+            message = str(exc) if isinstance(exc, RegressionUploadError) else file_errors.get(type(exc), type(exc).__name__)
+            prefix = 'PREVIEW: FAILED. UPLOAD: NOT_REQUESTED' if args.regression_command == 'preview' else 'UPLOAD: FAILED'
+            print(f'{prefix}. {message}. Local comparison verdict is unchanged.', file=sys.stderr)
+        else:
+            print(f'ERROR: {type(exc).__name__}. No successful report was produced. Check input schema, file paths and output-directory uniqueness.', file=sys.stderr)
         return EXIT_CODES['ERROR']
 
 
