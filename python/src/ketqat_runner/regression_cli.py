@@ -70,10 +70,13 @@ def run_capture(args) -> int:
                 try:
                     code = process.wait(timeout=args.timeout)
                 except subprocess.TimeoutExpired:
-                    if os.name == 'posix':
-                        os.killpg(process.pid, signal.SIGKILL)
-                    else:
-                        process.kill()
+                    try:
+                        if os.name == 'posix':
+                            os.killpg(process.pid, signal.SIGKILL)
+                        else:
+                            process.kill()
+                    except ProcessLookupError:
+                        pass  # It exited between timeout and termination; still record timeout.
                     process.wait()
                     raise
             if code != 0 or not output.exists():

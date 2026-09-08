@@ -95,10 +95,8 @@ The web app owns persistence, UI, APIs, authorization, charts, and deployment.
 
 ## Install
 
-```bash
-# Public npm release is pending. For existing TypeScript consumers, use the
-# reviewed exact-commit source installation described in docs/quickstart.md.
-```
+Public npm release is pending. For existing TypeScript consumers, use the
+reviewed exact-commit [source installation](docs/quickstart.md).
 
 The npm tarball contains only the TypeScript SDK runtime, declarations, schemas, and examples. The Python runner is a separate PyPI distribution named `ketqat`; Python source and test caches are not part of `ketqat-sdk`.
 

@@ -38,7 +38,7 @@ with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
     elapsed = time.monotonic()-started
     if result.returncode != 1:
         raise RuntimeError('The intentional sample must fail CI with REGRESSION.')
-    report=json.loads((args.output/'sample/report/report.json').read_text())
+    report=json.loads((args.output/'sample/report/report.json').read_text(encoding='utf-8'))
     if report['verdict'] != 'REGRESSION':
         raise RuntimeError('The sample verdict must be REGRESSION.')
     if abs(next(c for c in report['checks'] if c['metric']=='total_variation')['estimate']-0.5) >= 1e-12:
@@ -52,5 +52,5 @@ with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
               'platform':platform.platform(),'wheel_sha256':hashlib.sha256(wheel.read_bytes()).hexdigest(),
               'dependencies':dependencies,'sample_exit_code':result.returncode,'verdict':report['verdict'],
               'uploads':0,'claim':'Maintainer engineering verification, not an independent customer trial.'}
-    (args.output/'evidence.json').write_text(json.dumps(evidence,indent=2)+'\n')
+    (args.output/'evidence.json').write_text(json.dumps(evidence,indent=2)+'\n', encoding='utf-8')
     print(json.dumps(evidence,indent=2))
