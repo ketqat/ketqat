@@ -7,17 +7,13 @@ separate from any future KetQat subscription.
 
 ## Install from this repository
 
-The source installation below works without a published PyPI or npm release.
-Before [PR #265](https://github.com/ketqat/ketqat-sdk/pull/265) merges, check out
-its reviewed commit; after merge, use `main`. Record the exact commit you install
-with `git rev-parse HEAD` and pin it in your CI requirements.
+The source installation below targets merged `main`, without requiring a PyPI
+or npm release. For an unmerged review, check out that review's exact commit
+first. Record `git rev-parse HEAD` and pin the reviewed commit in CI.
 
 ```bash
 git clone https://github.com/ketqat/ketqat-sdk.git
 cd ketqat-sdk
-# Reviewable source path, also available after PR #265 merges:
-git fetch origin pull/265/head
-git checkout --detach FETCH_HEAD
 git rev-parse HEAD
 python3.11 -m venv .venv
 source .venv/bin/activate
