@@ -120,7 +120,7 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server: str,
-           *, opener=None, sleep=time.sleep) -> dict:
+           *, sleep=time.sleep) -> dict:
     if summary_path.stat().st_size > MAX_UPLOAD_BYTES:
         raise RegressionUploadError('Summary exceeds 100 KiB.')
     payload = summary_path.read_bytes()
@@ -141,7 +141,7 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
     if not re.fullmatch(r'kqr_[A-Za-z0-9_-]{43}', token):
         raise RegressionUploadError('Set a scoped KETQAT_REGRESSION_TOKEN in the environment; never pass it on the command line.')
     endpoint = server.rstrip('/') + f'/api/regression/repositories/{repository_id}/reports'
-    opener = opener or build_opener(NoRedirect())
+    opener = build_opener(NoRedirect())
     for attempt in range(3):
         request = Request(endpoint, data=payload, method='POST', headers={
             'Authorization': f'Bearer {token}', 'Content-Type': 'application/json',

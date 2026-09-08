@@ -162,6 +162,7 @@ def test_redirect_does_not_forward_credential(tmp_path, monkeypatch):
 def test_ambiguous_server_acknowledgements_are_rejected(tmp_path, monkeypatch):
     from io import BytesIO
     from types import SimpleNamespace
+    from ketqat_runner import regression_upload
     path = tmp_path / 'summary.json'
     path.write_text(json.dumps(prepare_summary(reports()[1])))
     fingerprint = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -170,8 +171,9 @@ def test_ambiguous_server_acknowledgements_are_rejected(tmp_path, monkeypatch):
     for body in (b'{' + valid_fields + b',"verdict":"WITHIN_POLICY"}',
                  b'{' + valid_fields + b',"extra":NaN}', b'[]'):
         opener = SimpleNamespace(open=lambda *args, **kwargs: BytesIO(body))
+        monkeypatch.setattr(regression_upload, 'build_opener', lambda *args: opener)
         with pytest.raises(ValueError):
-            upload(path, fingerprint, 'repository-test', 'https://ketqat.com', opener=opener)
+            upload(path, fingerprint, 'repository-test', 'https://ketqat.com')
 
 
 def test_cli_reports_authored_json_failures_without_leaking_input(tmp_path, monkeypatch, capsys):
@@ -244,3 +246,14 @@ def test_existing_preview_preserves_bytes_and_explains_no_upload_was_attempted(t
     assert 'Choose a new output path' in error
     assert 'private-path-do-not-log' not in error and 'previous-reviewed-private-content' not in error
     assert output.read_bytes() == original
+
+
+def test_missing_local_files_have_path_free_recovery_guidance(tmp_path, capsys):
+    from types import SimpleNamespace
+    from ketqat_runner.regression_cli import run
+    missing = tmp_path / 'private-file-do-not-log.json'
+    args = SimpleNamespace(regression_command='preview', report=missing, output=tmp_path/'out.json')
+    assert run(args) == 4
+    error = capsys.readouterr().err
+    assert 'Check the local paths' in error and 'UPLOAD: NOT_REQUESTED' in error
+    assert 'private-file-do-not-log' not in error
