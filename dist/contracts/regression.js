@@ -42,13 +42,17 @@ export const RegressionSummarySchema = z.object({
     policy: RegressionPolicySchema,
     changed_fields: z.array(ChangedFieldSchema).max(29),
     resources: z.object({ baseline: resources.nullable(), candidate: resources.nullable() }).strict(),
-    distribution: z.object({
-        estimate: fraction,
-        method: z.enum(["EXACT_IDEAL", "HOEFFDING_ALL_OUTCOMES"]),
-        qubits: z.number().int().min(1).max(12),
-        baseline_shots: z.number().int().min(1).max(10000000).nullable(),
-        candidate_shots: z.number().int().min(1).max(10000000).nullable(),
-    }).strict().nullable(),
+    distribution: z.discriminatedUnion("method", [
+        z.object({
+            estimate: fraction, method: z.literal("EXACT_IDEAL"),
+            qubits: z.number().int().min(1).max(12), baseline_shots: z.null(), candidate_shots: z.null(),
+        }).strict(),
+        z.object({
+            estimate: fraction, method: z.literal("HOEFFDING_ALL_OUTCOMES"),
+            qubits: z.number().int().min(1).max(12),
+            baseline_shots: z.number().int().min(1).max(10000000), candidate_shots: z.number().int().min(1).max(10000000),
+        }).strict(),
+    ]).nullable(),
     verdict: RegressionVerdictSchema,
     exit_code: z.number().int().min(0).max(5),
 }).strict();

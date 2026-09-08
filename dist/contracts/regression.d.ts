@@ -282,25 +282,43 @@ export declare const RegressionSummarySchema: z.ZodObject<{
             two_qubit_gates?: number | undefined;
         } | null;
     }>;
-    distribution: z.ZodNullable<z.ZodObject<{
+    distribution: z.ZodNullable<z.ZodDiscriminatedUnion<"method", [z.ZodObject<{
         estimate: z.ZodNumber;
-        method: z.ZodEnum<["EXACT_IDEAL", "HOEFFDING_ALL_OUTCOMES"]>;
+        method: z.ZodLiteral<"EXACT_IDEAL">;
         qubits: z.ZodNumber;
-        baseline_shots: z.ZodNullable<z.ZodNumber>;
-        candidate_shots: z.ZodNullable<z.ZodNumber>;
+        baseline_shots: z.ZodNull;
+        candidate_shots: z.ZodNull;
     }, "strict", z.ZodTypeAny, {
         estimate: number;
-        method: "EXACT_IDEAL" | "HOEFFDING_ALL_OUTCOMES";
+        method: "EXACT_IDEAL";
         qubits: number;
-        baseline_shots: number | null;
-        candidate_shots: number | null;
+        baseline_shots: null;
+        candidate_shots: null;
     }, {
         estimate: number;
-        method: "EXACT_IDEAL" | "HOEFFDING_ALL_OUTCOMES";
+        method: "EXACT_IDEAL";
         qubits: number;
-        baseline_shots: number | null;
-        candidate_shots: number | null;
-    }>>;
+        baseline_shots: null;
+        candidate_shots: null;
+    }>, z.ZodObject<{
+        estimate: z.ZodNumber;
+        method: z.ZodLiteral<"HOEFFDING_ALL_OUTCOMES">;
+        qubits: z.ZodNumber;
+        baseline_shots: z.ZodNumber;
+        candidate_shots: z.ZodNumber;
+    }, "strict", z.ZodTypeAny, {
+        estimate: number;
+        method: "HOEFFDING_ALL_OUTCOMES";
+        qubits: number;
+        baseline_shots: number;
+        candidate_shots: number;
+    }, {
+        estimate: number;
+        method: "HOEFFDING_ALL_OUTCOMES";
+        qubits: number;
+        baseline_shots: number;
+        candidate_shots: number;
+    }>]>>;
     verdict: z.ZodEnum<["WITHIN_POLICY", "REGRESSION", "INCONCLUSIVE", "INCOMPATIBLE", "ERROR", "NOT_RUN"]>;
     exit_code: z.ZodNumber;
 }, "strict", z.ZodTypeAny, {
@@ -346,10 +364,16 @@ export declare const RegressionSummarySchema: z.ZodObject<{
     };
     distribution: {
         estimate: number;
-        method: "EXACT_IDEAL" | "HOEFFDING_ALL_OUTCOMES";
+        method: "EXACT_IDEAL";
         qubits: number;
-        baseline_shots: number | null;
-        candidate_shots: number | null;
+        baseline_shots: null;
+        candidate_shots: null;
+    } | {
+        estimate: number;
+        method: "HOEFFDING_ALL_OUTCOMES";
+        qubits: number;
+        baseline_shots: number;
+        candidate_shots: number;
     } | null;
     verdict: "ERROR" | "INCOMPATIBLE" | "INCONCLUSIVE" | "NOT_RUN" | "REGRESSION" | "WITHIN_POLICY";
     exit_code: number;
@@ -396,10 +420,16 @@ export declare const RegressionSummarySchema: z.ZodObject<{
     };
     distribution: {
         estimate: number;
-        method: "EXACT_IDEAL" | "HOEFFDING_ALL_OUTCOMES";
+        method: "EXACT_IDEAL";
         qubits: number;
-        baseline_shots: number | null;
-        candidate_shots: number | null;
+        baseline_shots: null;
+        candidate_shots: null;
+    } | {
+        estimate: number;
+        method: "HOEFFDING_ALL_OUTCOMES";
+        qubits: number;
+        baseline_shots: number;
+        candidate_shots: number;
     } | null;
     verdict: "ERROR" | "INCOMPATIBLE" | "INCONCLUSIVE" | "NOT_RUN" | "REGRESSION" | "WITHIN_POLICY";
     exit_code: number;

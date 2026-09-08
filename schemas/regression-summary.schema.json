@@ -259,58 +259,78 @@
         "distribution": {
           "anyOf": [
             {
-              "type": "object",
-              "properties": {
-                "estimate": {
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 1
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "estimate": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "method": {
+                      "type": "string",
+                      "const": "EXACT_IDEAL"
+                    },
+                    "qubits": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 12
+                    },
+                    "baseline_shots": {
+                      "type": "null"
+                    },
+                    "candidate_shots": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "estimate",
+                    "method",
+                    "qubits",
+                    "baseline_shots",
+                    "candidate_shots"
+                  ],
+                  "additionalProperties": false
                 },
-                "method": {
-                  "type": "string",
-                  "enum": [
-                    "EXACT_IDEAL",
-                    "HOEFFDING_ALL_OUTCOMES"
-                  ]
-                },
-                "qubits": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 12
-                },
-                "baseline_shots": {
-                  "anyOf": [
-                    {
+                {
+                  "type": "object",
+                  "properties": {
+                    "estimate": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "method": {
+                      "type": "string",
+                      "const": "HOEFFDING_ALL_OUTCOMES"
+                    },
+                    "qubits": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 12
+                    },
+                    "baseline_shots": {
                       "type": "integer",
                       "minimum": 1,
                       "maximum": 10000000
                     },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "candidate_shots": {
-                  "anyOf": [
-                    {
+                    "candidate_shots": {
                       "type": "integer",
                       "minimum": 1,
                       "maximum": 10000000
-                    },
-                    {
-                      "type": "null"
                     }
-                  ]
+                  },
+                  "required": [
+                    "estimate",
+                    "method",
+                    "qubits",
+                    "baseline_shots",
+                    "candidate_shots"
+                  ],
+                  "additionalProperties": false
                 }
-              },
-              "required": [
-                "estimate",
-                "method",
-                "qubits",
-                "baseline_shots",
-                "candidate_shots"
-              ],
-              "additionalProperties": false
+              ]
             },
             {
               "type": "null"

@@ -97,7 +97,15 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
     payload = summary_path.read_bytes()
     if not re.fullmatch(r'[a-f0-9]{64}', confirmed_sha256) or hashlib.sha256(payload).hexdigest() != confirmed_sha256:
         raise ValueError('Review the exact preview file and pass its SHA256; file changed or confirmation missing.')
-    summary = load_json(summary_path)
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError('Duplicate JSON keys are invalid.')
+            value[key] = item
+        return value
+    summary = json.loads(payload, object_pairs_hook=unique,
+                         parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Non-finite JSON is invalid.')))
     validate_summary(summary)
     if not re.fullmatch(r'[A-Za-z0-9_-]{8,80}', repository_id):
         raise ValueError('Use the repository ID from your private workspace.')
@@ -135,7 +143,9 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
             if code in (429, 502, 503, 504) and attempt < 2:
                 sleep(2 ** (attempt + 1))
                 continue
-            guidance = {401: 'Token missing, expired or revoked.', 403: 'Check token scope and active subscription.',
+            guidance = {301: 'Redirect refused; use the actual API origin.', 302: 'Redirect refused; use the actual API origin.',
+                        303: 'Redirect refused; use the actual API origin.', 307: 'Redirect refused; use the actual API origin.',
+                        308: 'Redirect refused; use the actual API origin.', 401: 'Token missing, expired or revoked.', 403: 'Check token scope and active subscription.',
                         404: 'Repository unavailable to this credential.', 409: 'Review the active baseline and policy; re-run locally.',
                         413: 'Summary too large.', 422: 'Summary failed validation.',
                         429: 'Workspace usage or request limit reached.'}
