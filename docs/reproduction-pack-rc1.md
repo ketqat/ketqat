@@ -25,6 +25,16 @@ that claim only exists when someone unaffiliated runs this and says so.
 - ~2 GiB RAM, any x86-64 or arm64 machine. No network access is needed after
   `pip install`. No GPU, no quantum hardware, no paid service.
 
+## Historical RC1 versus current CI
+
+This is the immutable 0.2.0 RC1 reproduction pack. Its decoder pin and expected
+hashes below describe that historical dependency set, not the current release
+pipeline. Current clean-room CI pins `tesseract-decoder==0.1.1.dev20260822020007`
+with benchmarks commit `8d429a8e5d4211c15babef458170c3a05e33596f` to use the
+portable wheel. Do not substitute that newer decoder into this pack and claim
+its old hashes were reproduced. Qiskit regression installation uses its separate
+hash-pinned requirements and does not require this QEC decoder.
+
 ## Verified dependency set
 
 The expected outputs below were produced with exactly:
