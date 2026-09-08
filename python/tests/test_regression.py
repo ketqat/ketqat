@@ -300,3 +300,18 @@ def test_case_id_is_validated_before_capture(capsys):
             parser.parse_args(['regression', 'capture', 'not-executed.py:factory', '--case-id', case, '--output', 'not-written.json'])
         assert stopped.value.code == 2
         assert 'Use a case ID of 1–120' in capsys.readouterr().err
+
+
+def test_factory_reference_drift_is_explicit_source_provenance():
+    baseline = capture(QuantumCircuit(1), case_id='factory-case')
+    baseline.factory = 'circuits.py:first'
+    candidate = baseline.model_copy(deep=True)
+    candidate.factory = 'circuits.py:second'
+    policy = Policy(resources={'depth': {}}, max_total_variation=None, changed_axes=['qiskit'])
+    fixed = compare(baseline, candidate, policy)
+    assert fixed['verdict'] == 'INCOMPATIBLE'
+    assert fixed['changes'][0]['field'] == 'factory'
+    assert fixed['changes'][0]['intentional'] is False
+    permitted = compare(baseline, candidate, policy.model_copy(update={'changed_axes': ['source_commit']}))
+    assert permitted['verdict'] == 'WITHIN_POLICY'
+    assert permitted['changes'][0]['intentional'] is True

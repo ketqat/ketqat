@@ -230,7 +230,7 @@ def capture(circuit: Any, *, case_id: str, seed: int = 42, optimization_level: i
 
 def _differences(baseline: Snapshot, candidate: Snapshot) -> list[dict[str, Any]]:
     differences = []
-    for field in ('source_commit', 'source_dirty', 'case_id', 'circuit_sha256', 'factory_sha256'):
+    for field in ('source_commit', 'source_dirty', 'case_id', 'circuit_sha256', 'factory', 'factory_sha256'):
         a, b = getattr(baseline, field), getattr(candidate, field)
         if a != b:
             differences.append({'field': field, 'baseline': a, 'candidate': b})
@@ -247,7 +247,7 @@ def _differences(baseline: Snapshot, candidate: Snapshot) -> list[dict[str, Any]
 
 def compare(baseline: Snapshot, candidate: Snapshot, policy: Policy) -> dict[str, Any]:
     differences = _differences(baseline, candidate)
-    allowed = {'source_commit': {'source_commit', 'source_dirty', 'factory_sha256'}, 'circuit': {'circuit_sha256'},
+    allowed = {'source_commit': {'source_commit', 'source_dirty', 'factory', 'factory_sha256'}, 'circuit': {'circuit_sha256'},
                'qiskit': {'environment.qiskit'}}
     permitted = set().union(*(allowed[axis] for axis in policy.changed_axes))
     for difference in differences:
