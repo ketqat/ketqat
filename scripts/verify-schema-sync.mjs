@@ -21,6 +21,8 @@ const generatedDir = resolve(root, "schemas")
 const packagedDir = resolve(root, "python", "src", "ketqat_runner", "schemas")
 
 const PYTHON_VALIDATED_SCHEMAS = [
+  "regression-policy.schema.json",
+  "regression-summary.schema.json",
   "qec-experiment-manifest.schema.json",
   "algorithm-experiment-manifest.schema.json",
   "qec-benchmark-result.schema.json",

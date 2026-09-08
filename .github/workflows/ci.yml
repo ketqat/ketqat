@@ -30,8 +30,13 @@ jobs:
           python -m pip install --no-deps --require-hashes -r "requirements-regression-qiskit-${{ matrix.qiskit }}.txt"
           python -m pip install --no-deps ./python
           python -m pip install --require-hashes -r requirements-regression-tests-py311.txt
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Build the shared TypeScript upload validator
+        run: npm ci && npm run build
       - name: Verify real Qiskit, policies and CLI outcomes
-        run: python -m pytest python/tests/test_regression.py -q
+        run: python -m pytest python/tests/test_regression.py python/tests/test_regression_upload.py -q
 
   node:
     runs-on: ubuntu-latest

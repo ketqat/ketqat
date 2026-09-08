@@ -1,0 +1,356 @@
+{
+  "$ref": "#/definitions/regression-summary",
+  "definitions": {
+    "regression-summary": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "ketqat.regression.summary.v1"
+        },
+        "provenance": {
+          "type": "string",
+          "const": "CLIENT_REPORTED"
+        },
+        "case_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of the local case ID; no raw case or repository name."
+        },
+        "baseline_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "candidate_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "baseline_status": {
+          "type": "string",
+          "enum": [
+            "EXECUTED",
+            "ERROR",
+            "NOT_RUN"
+          ]
+        },
+        "candidate_status": {
+          "type": "string",
+          "enum": [
+            "EXECUTED",
+            "ERROR",
+            "NOT_RUN"
+          ]
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "type": "string",
+              "const": "ketqat.regression.policy.v1"
+            },
+            "changed_axes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "source_commit",
+                  "circuit",
+                  "qiskit"
+                ]
+              },
+              "maxItems": 3
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "depth": {
+                  "type": "object",
+                  "properties": {
+                    "absolute_increase": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "relative_increase": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Fraction: 0.1 means +10%, 1 means +100%."
+                    }
+                  },
+                  "required": [
+                    "absolute_increase",
+                    "relative_increase"
+                  ],
+                  "additionalProperties": false
+                },
+                "size": {
+                  "type": "object",
+                  "properties": {
+                    "absolute_increase": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "relative_increase": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Fraction: 0.1 means +10%, 1 means +100%."
+                    }
+                  },
+                  "required": [
+                    "absolute_increase",
+                    "relative_increase"
+                  ],
+                  "additionalProperties": false
+                },
+                "two_qubit_gates": {
+                  "type": "object",
+                  "properties": {
+                    "absolute_increase": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "relative_increase": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Fraction: 0.1 means +10%, 1 means +100%."
+                    }
+                  },
+                  "required": [
+                    "absolute_increase",
+                    "relative_increase"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "max_total_variation": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "family_alpha": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            }
+          },
+          "required": [
+            "schema_version",
+            "changed_axes",
+            "resources",
+            "max_total_variation",
+            "family_alpha"
+          ],
+          "additionalProperties": false
+        },
+        "changed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "source_commit",
+              "source_dirty",
+              "case_id",
+              "circuit_sha256",
+              "factory_sha256",
+              "environment.python",
+              "environment.system",
+              "environment.machine",
+              "environment.kernel",
+              "environment.ketqat_capture",
+              "environment.qiskit",
+              "environment.numpy",
+              "environment.scipy",
+              "environment.ketqat",
+              "conditions.execution",
+              "conditions.initial_state",
+              "conditions.measurement",
+              "conditions.bit_order",
+              "conditions.backend",
+              "conditions.noise",
+              "conditions.qubits",
+              "conditions.seed",
+              "conditions.shots",
+              "conditions.optimization_level",
+              "conditions.basis_gates"
+            ]
+          },
+          "maxItems": 29
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "baseline": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "depth": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "size": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "two_qubit_gates": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "candidate": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "depth": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "size": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    },
+                    "two_qubit_gates": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000000
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "baseline",
+            "candidate"
+          ],
+          "additionalProperties": false
+        },
+        "distribution": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "estimate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "EXACT_IDEAL",
+                    "HOEFFDING_ALL_OUTCOMES"
+                  ]
+                },
+                "qubits": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 12
+                },
+                "baseline_shots": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "candidate_shots": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "estimate",
+                "method",
+                "qubits",
+                "baseline_shots",
+                "candidate_shots"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "WITHIN_POLICY",
+            "REGRESSION",
+            "INCONCLUSIVE",
+            "INCOMPATIBLE",
+            "ERROR",
+            "NOT_RUN"
+          ]
+        },
+        "exit_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        }
+      },
+      "required": [
+        "schema_version",
+        "provenance",
+        "case_key",
+        "baseline_sha256",
+        "candidate_sha256",
+        "baseline_status",
+        "candidate_status",
+        "policy",
+        "changed_fields",
+        "resources",
+        "distribution",
+        "verdict",
+        "exit_code"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

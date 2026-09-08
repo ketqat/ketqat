@@ -15,4 +15,5 @@ export { AdvantageThresholdSchema } from "../intelligence/thresholds.js";
 export { DecisionAssessmentSchema } from "../intelligence/decision.js";
 export { ResourceIntelligenceBundleSchema, EvidenceSourceSchema, } from "../intelligence/bundle.js";
 export { QuantitySchema } from "../intelligence/measurement.js";
+export { RegressionPolicySchema, RegressionSummarySchema } from "../contracts/regression.js";
 //# sourceMappingURL=index.d.ts.map

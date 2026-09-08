@@ -57,3 +57,4 @@ export {
   EvidenceSourceSchema,
 } from "../intelligence/bundle.js"
 export { QuantitySchema } from "../intelligence/measurement.js"
+export { RegressionPolicySchema, RegressionSummarySchema } from "../contracts/regression.js"

@@ -15,7 +15,7 @@ from .regression_report import markdown, write_reports
 
 
 def add_parser(subcommands):
-    parser = subcommands.add_parser('regression', help='Capture and compare local Qiskit regression checks (no upload).')
+    parser = subcommands.add_parser('regression', help='Local Qiskit regression checks; optional previewed private summary upload.')
     commands = parser.add_subparsers(dest='regression_command', required=True)
     run = commands.add_parser('capture', help='Execute your own local Python circuit factory with a time limit.')
     run.add_argument('factory', help='Local path.py:function returning QuantumCircuit. Runs your code locally.')
@@ -32,6 +32,14 @@ def add_parser(subcommands):
     diff.add_argument('--output-dir', type=Path, required=True)
     sample = commands.add_parser('sample', help='Execute a labelled intentional Bell-circuit mutation locally.')
     sample.add_argument('--output-dir', type=Path, required=True)
+    preview = commands.add_parser('preview', help='Write an allowlisted summary for review; sends nothing.')
+    preview.add_argument('report', type=Path)
+    preview.add_argument('--output', type=Path, required=True)
+    upload = commands.add_parser('upload', help='Send exactly the reviewed summary using a scoped environment token.')
+    upload.add_argument('summary', type=Path)
+    upload.add_argument('--confirm-sha256', required=True)
+    upload.add_argument('--repository', required=True)
+    upload.add_argument('--server', default='https://ketqat.com')
 
 
 def worker(factory: str, case_id: str, output: Path, seed: int, level: int, shots: int | None):
@@ -89,6 +97,15 @@ def run_capture(args) -> int:
 
 def run(args) -> int:
     try:
+        if args.regression_command == 'preview':
+            from .regression_upload import preview
+            preview(args.report, args.output)
+            return 0
+        if args.regression_command == 'upload':
+            from .regression_upload import upload
+            result = upload(args.summary, args.confirm_sha256, args.repository, args.server)
+            print(f'UPLOAD: {result["upload"]}; COMPARISON: {result["verdict"]}; report {result["report_id"]}')
+            return 0
         if args.regression_command == 'capture':
             return run_capture(args)
         if args.regression_command == 'sample':
@@ -120,7 +137,12 @@ def run(args) -> int:
         return report['exit_code']
     except Exception as exc:
         # Validation exceptions can contain the invalid value (possibly private).
-        print(f'ERROR: {type(exc).__name__}. No successful report was produced. Check input schema, file paths and output-directory uniqueness.', file=sys.stderr)
+        if args.regression_command in ('upload', 'preview'):
+            # Transport errors are deliberately authored, without server response bodies or credentials.
+            message = str(exc) if type(exc) is ValueError else type(exc).__name__
+            print(f'UPLOAD: FAILED_OR_NOT_REQUESTED. {message}. Local comparison verdict is unchanged.', file=sys.stderr)
+        else:
+            print(f'ERROR: {type(exc).__name__}. No successful report was produced. Check input schema, file paths and output-directory uniqueness.', file=sys.stderr)
         return EXIT_CODES['ERROR']
 
 

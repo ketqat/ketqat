@@ -142,3 +142,7 @@ property-based testing. These tools solve different verification claims.
 
 Team's proposed USD 149/workspace/month is a validation price for hosted private
 baseline/policy/history management. It is not on sale through these commands.
+
+## Optional private history
+
+The local result is complete without upload. [Previewed private summaries](private-regression-summaries.md) describe the optional transport, redaction, scoped credentials, hosted availability and independent upload status.
