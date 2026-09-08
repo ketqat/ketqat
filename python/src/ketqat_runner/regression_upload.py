@@ -129,7 +129,10 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
                 body = response.read(8193)
                 if len(body) > 8192:
                     raise ValueError('Unexpected upload response size.')
-                result = json.loads(body)
+                result = json.loads(body, object_pairs_hook=unique,
+                                    parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Non-finite acknowledgement JSON is invalid.')))
+                if not isinstance(result, dict):
+                    raise ValueError('Server acknowledgement must be a JSON object.')
                 if (result.get('upload') not in ('STORED', 'DUPLICATE') or
                     result.get('verdict') != summary['verdict'] or
                     not re.fullmatch(r'[A-Za-z0-9_-]{8,80}', result.get('report_id', ''))):

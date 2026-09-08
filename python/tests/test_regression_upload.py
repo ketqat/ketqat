@@ -151,3 +151,18 @@ def test_redirect_does_not_forward_credential(tmp_path, monkeypatch):
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def test_ambiguous_server_acknowledgements_are_rejected(tmp_path, monkeypatch):
+    from io import BytesIO
+    from types import SimpleNamespace
+    path = tmp_path / 'summary.json'
+    path.write_text(json.dumps(prepare_summary(reports()[1])))
+    fingerprint = hashlib.sha256(path.read_bytes()).hexdigest()
+    monkeypatch.setenv('KETQAT_REGRESSION_TOKEN', 'kqr_' + 'a' * 43)
+    valid_fields = b'"upload":"STORED","verdict":"REGRESSION","report_id":"report-test-123"'
+    for body in (b'{' + valid_fields + b',"verdict":"WITHIN_POLICY"}',
+                 b'{' + valid_fields + b',"extra":NaN}', b'[]'):
+        opener = SimpleNamespace(open=lambda *args, **kwargs: BytesIO(body))
+        with pytest.raises(ValueError):
+            upload(path, fingerprint, 'repository-test', 'https://ketqat.com', opener=opener)
