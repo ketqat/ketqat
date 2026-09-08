@@ -40,8 +40,11 @@ def test_allowlisted_summaries_keep_all_six_verdicts_and_match_typescript():
     summaries = [prepare_summary(x) for x in originals]
     assert {s['verdict'] for s in summaries} == {'WITHIN_POLICY', 'REGRESSION', 'INCONCLUSIVE', 'INCOMPATIBLE', 'ERROR', 'NOT_RUN'}
     serialized = json.dumps(summaries)
-    for secret in ('private-customer-case', 'private-source.py', 'secret-error', 'secret-reason', 'probabilities', 'factory', 'recorded_at'):
+    for secret in ('private-customer-case', 'private-source.py', 'secret-error', 'secret-reason', 'probabilities', 'recorded_at'):
         assert secret not in serialized
+    # Changed field names are allowlisted; the factory reference value is not.
+    assert all('factory' not in summary for summary in summaries)
+    assert 'factory' in summaries[-1]['changed_fields']
     root = Path(__file__).resolve().parents[2]
     # CI builds dist explicitly. Missing TypeScript verification is a failure.
     script = """
