@@ -1,0 +1,24 @@
+# Copy into YOUR repository after reviewing/pinning the SDK commit. This runs
+# only your own test code with read permission and no KetQat/GitHub secret.
+name: Quantum regression
+on: [pull_request]
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      # Supply your reviewed immutable source install in requirements-ci.txt.
+      # No public ketqat package publication is assumed.
+      - run: python -m pip install -r requirements-ci.txt
+      - run: ketqat regression capture tests/circuits.py:prepare_state --case-id prepare-state --output candidate.json
+      # baseline.json and policy.json must come from a reviewed baseline. A PR
+      # may propose changes to them but required review governs promotion.
+      - run: ketqat regression compare baseline.json candidate.json --policy policy.json --output-dir change-report
+# Never use pull_request_target to execute fork code with secrets. No upload or
+# pull-request write permission is needed to get an Actions step summary.

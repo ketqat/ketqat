@@ -13,6 +13,25 @@ permissions:
   contents: read
 
 jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        qiskit: ['2.4.2', '2.5.2']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Install the bounded regression environment
+        run: |
+          python -m pip install --require-hashes -r requirements-regression-py311.txt
+          python -m pip install --no-deps "qiskit==${{ matrix.qiskit }}" ./python
+          python -m pip install pytest==9.1.1
+      - name: Verify real Qiskit, policies and CLI outcomes
+        run: python -m pytest python/tests/test_regression.py -q
+
   node:
     runs-on: ubuntu-latest
     steps:
@@ -94,7 +113,7 @@ jobs:
       - name: Install runner with real QEC dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e "python[qec,resources,mitigation,interop]"
+          python -m pip install -e "python[qec,resources,mitigation,interop,regression]"
           python -m pip install pytest
 
       # The surface-code model is differentially tested against Qualtran, which is

@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url"
  */
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url))
-const IDENTITY = /Quantum Decision Intelligence/
+const IDENTITY = /Qiskit/
 
 function prose(path) {
   return readFileSync(`${ROOT}${path}`, "utf8").replace(/\s+/g, " ")
@@ -33,7 +33,7 @@ test("the README leads with what the product is now", () => {
   assert.match(opening, IDENTITY, "a stranger reads the first paragraph and little else")
   // The refusals are the distinctive claim, and stating them early is what
   // stops somebody investing an afternoon in a question we will not answer.
-  assert.match(opening, /No dates, no prices, no vendor rankings/i)
+  assert.match(opening, /No account, QPU or upload is required/i)
 })
 
 test("the README keeps the registry rather than erasing it", () => {

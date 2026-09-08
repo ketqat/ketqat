@@ -1,0 +1,7 @@
+{
+  "schema_version": "ketqat.regression.policy.v1",
+  "changed_axes": ["source_commit", "circuit"],
+  "resources": {"two_qubit_gates": {"absolute_increase": 1, "relative_increase": 0.0}},
+  "max_total_variation": 0.05,
+  "family_alpha": 0.01
+}

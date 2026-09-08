@@ -1,7 +1,7 @@
 {
   "name": "ketqat-sdk",
   "version": "0.3.0",
-  "description": "Typed contracts, schemas, reproducibility hashing, and a REST client for KetQat -- Quantum Decision Intelligence for fault-tolerant quantum resource estimation, and the vendor-neutral research registry beneath it.",
+  "description": "Qiskit regression checks, explicit comparison policies and reproducible research contracts for KetQat. Local compute with optional private team operations.",
   "keywords": [
     "quantum-computing",
     "quantum-resource-estimation",

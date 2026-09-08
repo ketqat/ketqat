@@ -1,7 +1,7 @@
 [project]
 name = "ketqat"
 version = "0.3.0"
-description = "Local runner for KetQat -- Quantum Decision Intelligence. Run 'ketqat run <manifest>' to reproduce a published result or produce your own, with a canonical reproducibility hash."
+description = "Qiskit regression checks and reproducible research runners for KetQat. Compare local circuit changes and SDK updates against an explicit policy."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
@@ -13,6 +13,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+regression = ["qiskit>=2.0,<3"]
 qec = ["numpy>=1.26", "stim>=1.13", "pymatching>=2.2"]
 algorithms = ["numpy>=1.26"]
 # Qualtran is the reference implementation this project's surface-code model is

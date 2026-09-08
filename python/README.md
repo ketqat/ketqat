@@ -1,5 +1,8 @@
 # ketqat
 
+Catch quantum regressions before you merge. For the Qiskit 2.x local/CI flow, start with the [regression quickstart](https://github.com/ketqat/ketqat-sdk/blob/feature/commercial-regression/docs/regression-quickstart.md). No account or upload is required. Public PyPI publication remains pending.
+
+
 Local benchmark runner for [KetQat](https://ketqat.com) — a vendor-neutral registry for reproducible quantum error-correction and quantum-algorithm experiments.
 
 ```bash

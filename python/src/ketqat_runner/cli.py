@@ -34,6 +34,8 @@ from .validation import KetQatValidationError
 def main() -> int:
     parser = argparse.ArgumentParser(prog="ketqat")
     subcommands = parser.add_subparsers(dest="command", required=True)
+    from .regression_cli import add_parser as add_regression_parser
+    add_regression_parser(subcommands)
     run_parser = subcommands.add_parser("run", help="Run a KetQat experiment manifest locally.")
     run_parser.add_argument("manifest", help="Manifest file path or packaged example name.")
     run_parser.add_argument("--output", type=Path, required=True)
@@ -138,6 +140,10 @@ def main() -> int:
     job_bundle_parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
 
     args = parser.parse_args()
+
+    if args.command == 'regression':
+        from .regression_cli import run as run_regression
+        return run_regression(args)
 
     if args.command == "job":
         try:

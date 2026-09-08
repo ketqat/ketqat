@@ -2,24 +2,25 @@
 
 ## Mission
 
-KetQat is open-source research infrastructure for reproducible quantum error-correction and quantum-algorithm experiments.
+The current priority is a low-touch business helping small Qiskit software teams
+catch regressions on PRs and SDK upgrades. The free local/CI comparison is the
+core; private team baseline/policy management and history are the proposed paid
+service. See [ADR 0015](https://github.com/ketqat/ketqat-planning/blob/feature/commercial-regression/docs/architecture/adr/0015-continuous-qiskit-regression-business.md).
 
-Supported domains:
+KetQat's own software subscription and test payment integration are authorized by
+the maintainer's 2026-09-08 commercial rebuild directive. Prior blanket no-billing,
+no-test-checkout and roadmap-first restrictions are superseded. Record a proposed
+price as a hypothesis; never invent sales, customers, costs or retention.
 
-- Quantum Error Correction and fault-tolerant quantum computing
-- Quantum algorithms and reproducible algorithm evaluation
+Keep Engineering-ready, Commercially-ready and Market-validated separate. Live
+selling still requires actual seller/legal/account setup. New paid capacity and
+external outreach require explicit authorization. Existing public OSS licenses,
+private data, shared URLs, scientific validity and review gates are preserved.
 
-Explicit non-goals:
-
-- QPU marketplace, billing, persistent credential storage, commercial QPU execution aggregation, provider pricing aggregation, provider status monitoring, and hardware-provider catalog features presented as purchasing advice
-
-In scope per [ADR 0004](https://github.com/ketqat/ketqat-planning/blob/main/docs/architecture/adr/0004-scientific-execution-and-hardware-characterization-scope.md), accepted 2026-07-28, which supersedes the provider clause of ADR 0001:
-
-- Hardware characterization snapshots: immutable, dated device descriptions used as scientific inputs to transpilation, resource estimation, and QEC analysis
-- User-initiated execution on real hardware (BYOC), where credentials are supplied per job and never persisted
-- Provider adapters that translate KetQat circuits and results to and from a provider's formats
-
-Binding conditions: credentials never persist including on failure and crash paths; explicit pre-submission confirmation of provider, backend, shots, cost, and quota; execution class on every result; absent credentials produce not-run records rather than fixtures imitating hardware results; snapshots are dated observations, never refreshed in place.
+QPU marketplace/resale, provider billing, persistent provider credentials and
+unconfirmed hardware execution remain excluded. Existing research functionality
+is preserved, but unfinished studies/MCP/QEC/FTQC breadth is not a prerequisite.
+No customer source runs on KetQat servers; initial compute is local/customer CI.
 
 ## Repository responsibility
 
