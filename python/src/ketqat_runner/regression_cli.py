@@ -112,20 +112,26 @@ def run(args) -> int:
         if args.regression_command == 'capture':
             return run_capture(args)
         if args.regression_command == 'sample':
-            from qiskit import QuantumCircuit
             args.output_dir.mkdir(parents=True, exist_ok=False)
-            baseline = QuantumCircuit(2)
-            baseline.h(0)
-            baseline.cx(0,1)
-            candidate = QuantumCircuit(2)
-            candidate.h(0)  # Deliberate removal of entanglement, not an SDK bug.
-            b, c = capture(baseline, case_id='intentional-bell-mutation'), capture(candidate, case_id='intentional-bell-mutation')
+            try:
+                from qiskit import QuantumCircuit
+            except ImportError:
+                b = not_executed('intentional-bell-mutation', 'NOT_RUN', 'Qiskit is unavailable. Install the pinned regression requirements.')
+                c = b.model_copy(deep=True)
+            else:
+                baseline = QuantumCircuit(2)
+                baseline.h(0)
+                baseline.cx(0,1)
+                candidate = QuantumCircuit(2)
+                candidate.h(0)  # Deliberate removal of entanglement, not an SDK bug.
+                b, c = capture(baseline, case_id='intentional-bell-mutation'), capture(candidate, case_id='intentional-bell-mutation')
             save_snapshot(b, args.output_dir / 'baseline.json')
             save_snapshot(c, args.output_dir / 'candidate.json')
             policy = Policy(resources={'two_qubit_gates': {}}, max_total_variation=0.05)
             args.output_dir.joinpath('policy.json').write_text(policy.model_dump_json(indent=2) + '\n')
             report = compare(b, c, policy)
-            report['sample'] = 'Intentional missing-CX mutation. Measured local simulation; not an observed Qiskit defect or customer incident.'
+            report['sample'] = ('Intentional missing-CX mutation. Measured local simulation; not an observed Qiskit defect or customer incident.'
+                                if b.status == c.status == 'EXECUTED' else 'Intentional missing-CX example was not fully executed; inspect capture status. No successful simulation is claimed.')
             write_reports(args.output_dir / 'report', report, b.model_dump(), c.model_dump())
             print(report['sample'])
         else:

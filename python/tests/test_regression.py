@@ -255,3 +255,22 @@ def test_nonexecuted_snapshot_rejects_execution_data():
     for field in ('conditions', 'circuit_sha256', 'circuit', 'resources', 'probabilities'):
         with pytest.raises(ValidationError):
             Snapshot.model_validate(error | {field: baseline.model_dump()[field]})
+
+
+def test_sample_without_optional_qiskit_records_not_run(tmp_path, monkeypatch):
+    import builtins
+    import json
+    from types import SimpleNamespace
+    from ketqat_runner.regression_cli import run
+    original = builtins.__import__
+    def missing_qiskit(name, *args, **kwargs):
+        if name == 'qiskit':
+            raise ImportError('optional dependency unavailable')
+        return original(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, '__import__', missing_qiskit)
+    output = tmp_path / 'missing-qiskit'
+    assert run(SimpleNamespace(regression_command='sample', output_dir=output)) == 5
+    report = json.loads((output / 'report/report.json').read_text())
+    assert report['verdict'] == 'NOT_RUN' and report['checks'] == []
+    assert report['baseline']['status'] == report['candidate']['status'] == 'NOT_RUN'
+    assert 'not fully executed' in report['sample']
