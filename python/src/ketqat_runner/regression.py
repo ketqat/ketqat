@@ -70,8 +70,8 @@ class Snapshot(Record):
     @model_validator(mode='after')
     def consistent(self):
         if self.status != 'EXECUTED':
-            if not self.reason or self.resources is not None or self.probabilities is not None or self.counts is not None:
-                raise ValueError('Non-execution needs a reason and cannot contain successful metrics.')
+            if not self.reason or any(value is not None for value in (self.conditions, self.circuit_sha256, self.circuit, self.resources, self.probabilities, self.counts)):
+                raise ValueError('Non-execution needs a reason and cannot contain executed circuit data or observations.')
             return self
         if not self.conditions or not self.circuit_sha256:
             raise ValueError('Executed snapshots need conditions and a circuit fingerprint.')

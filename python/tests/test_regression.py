@@ -247,3 +247,11 @@ def test_markdown_escapes_snapshot_reason_and_all_report_text():
     assert '[open](' not in rendered
     assert '\n# injected heading' not in rendered
     assert '&lt;script&gt;' in rendered
+
+
+def test_nonexecuted_snapshot_rejects_execution_data():
+    baseline = capture(QuantumCircuit(1), case_id='nonexecution')
+    error = not_executed('nonexecution', 'ERROR', 'Failed locally').model_dump()
+    for field in ('conditions', 'circuit_sha256', 'circuit', 'resources', 'probabilities'):
+        with pytest.raises(ValidationError):
+            Snapshot.model_validate(error | {field: baseline.model_dump()[field]})
