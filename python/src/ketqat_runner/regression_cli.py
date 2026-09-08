@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import importlib.util
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -27,12 +28,18 @@ def bounded_integer(minimum: int, maximum: int):
     return parse
 
 
+def case_identifier(value: str) -> str:
+    if not 1 <= len(value) <= 120 or not re.fullmatch(r'[A-Za-z0-9_.-]+', value):
+        raise argparse.ArgumentTypeError('Use a case ID of 1–120 letters, digits, underscores, dots or hyphens.')
+    return value
+
+
 def add_parser(subcommands):
     parser = subcommands.add_parser('regression', help='Capture and compare local Qiskit regression checks (no upload).')
     commands = parser.add_subparsers(dest='regression_command', required=True)
     run = commands.add_parser('capture', help='Execute your own local Python circuit factory with a time limit.')
     run.add_argument('factory', help='Local path.py:function returning QuantumCircuit. Runs your code locally.')
-    run.add_argument('--case-id', required=True)
+    run.add_argument('--case-id', type=case_identifier, required=True)
     run.add_argument('--output', type=Path, required=True)
     run.add_argument('--seed', type=bounded_integer(0, 2**32-1), default=42, metavar='0..4294967295')
     run.add_argument('--optimization-level', type=int, choices=range(4), default=1)

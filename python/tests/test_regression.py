@@ -259,7 +259,6 @@ def test_nonexecuted_snapshot_rejects_execution_data():
 
 def test_sample_without_optional_qiskit_records_not_run(tmp_path, monkeypatch):
     import builtins
-    import json
     from types import SimpleNamespace
     from ketqat_runner.regression_cli import run
     original = builtins.__import__
@@ -289,3 +288,15 @@ def test_capture_rejects_invalid_budgets_before_starting_factory(capsys):
         assert 'Use an integer from' in capsys.readouterr().err
     valid = parser.parse_args(base + ['--shots', '1', '--seed', '4294967295'])
     assert valid.shots == 1 and valid.seed == 2**32 - 1
+
+
+def test_case_id_is_validated_before_capture(capsys):
+    import argparse
+    from ketqat_runner.regression_cli import add_parser
+    parser = argparse.ArgumentParser()
+    add_parser(parser.add_subparsers(dest='command', required=True))
+    for case in ('', 'private/case', 'x' * 121):
+        with pytest.raises(SystemExit) as stopped:
+            parser.parse_args(['regression', 'capture', 'not-executed.py:factory', '--case-id', case, '--output', 'not-written.json'])
+        assert stopped.value.code == 2
+        assert 'Use a case ID of 1–120' in capsys.readouterr().err
