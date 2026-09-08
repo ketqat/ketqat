@@ -8,15 +8,18 @@ from typing import Any
 
 
 def markdown(report: dict[str, Any]) -> str:
-    # JSON-in-code is escaped against backticks and HTML before entering Actions.
-    safe_case = html.escape(report['case_id']).replace('`', '')
-    lines = [f"## KetQat: {report['verdict']}", '', f'Case: {safe_case}', '',
-             report['conclusion'], '', '| Check | Verdict | Evidence |', '| --- | --- | --- |']
+    def escape(value):
+        value = html.escape(str(value), quote=True).replace('\r', ' ').replace('\n', ' ')
+        return ''.join('\\' + char if char in '\\`*_{}[]()#+-.!|>' else char for char in value)
+    verdict = report['verdict']
+    if verdict not in ('WITHIN_POLICY', 'REGRESSION', 'INCONCLUSIVE', 'INCOMPATIBLE', 'ERROR', 'NOT_RUN'):
+        raise ValueError('Invalid report verdict.')
+    lines = [f"## KetQat: {verdict}", '', f"Case: {escape(report['case_id'])}", '',
+             escape(report['conclusion']), '', '| Check | Verdict | Evidence |', '| --- | --- | --- |']
     for check in report['checks']:
         evidence = json.dumps({k: v for k, v in check.items() if k not in ('metric', 'verdict')}, sort_keys=True)
-        evidence = html.escape(evidence).replace('|', '&#124;').replace('`', '&#96;')
-        lines.append(f"| {check['metric']} | {check['verdict']} | {evidence} |")
-    lines += ['', 'Next: ' + ' '.join(report['next_steps']), '', report['scope'], '',
+        lines.append(f"| {escape(check['metric'])} | {escape(check['verdict'])} | {escape(evidence)} |")
+    lines += ['', 'Next: ' + ' '.join(escape(step) for step in report['next_steps']), '', escape(report['scope']), '',
               'Upload: NOT_REQUESTED. This report remains local unless you explicitly share it.', '']
     return '\n'.join(lines)
 
