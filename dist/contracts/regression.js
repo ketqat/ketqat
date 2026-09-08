@@ -10,6 +10,14 @@ export const RegressionResourceLimitSchema = z.object({
     absolute_increase: observation,
     relative_increase: fraction.describe("Fraction: 0.1 means +10%, 1 means +100%."),
 }).strict();
+// JSON cannot encode undefined. Reject explicit undefined in JS objects too,
+// so an optional-but-present key cannot masquerade as a selected measurement.
+const requireDefinedEntries = (value, context) => {
+    for (const [key, item] of Object.entries(value)) {
+        if (item === undefined)
+            context.addIssue({ code: z.ZodIssueCode.custom, path: [key], message: "Omit unselected fields instead of setting them to undefined." });
+    }
+};
 export const RegressionPolicySchema = z.object({
     schema_version: z.literal("ketqat.regression.policy.v1"),
     changed_axes: z.array(z.enum(["source_commit", "circuit", "qiskit"])).max(3),
@@ -17,7 +25,7 @@ export const RegressionPolicySchema = z.object({
         depth: RegressionResourceLimitSchema.optional(),
         size: RegressionResourceLimitSchema.optional(),
         two_qubit_gates: RegressionResourceLimitSchema.optional(),
-    }).strict(),
+    }).strict().superRefine(requireDefinedEntries),
     max_total_variation: fraction.nullable(),
     family_alpha: z.number().finite().gt(0).lt(1),
 }).strict();
@@ -30,7 +38,7 @@ const ChangedFieldSchema = z.enum([
     "conditions.optimization_level", "conditions.basis_gates",
 ]);
 const status = z.enum(["EXECUTED", "ERROR", "NOT_RUN"]);
-const resources = z.object({ depth: observation.optional(), size: observation.optional(), two_qubit_gates: observation.optional() }).strict();
+const resources = z.object({ depth: observation.optional(), size: observation.optional(), two_qubit_gates: observation.optional() }).strict().superRefine(requireDefinedEntries);
 export const RegressionSummarySchema = z.object({
     schema_version: z.literal("ketqat.regression.summary.v1"),
     provenance: z.literal("CLIENT_REPORTED"),

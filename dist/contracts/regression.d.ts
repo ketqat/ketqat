@@ -21,7 +21,7 @@ export declare const RegressionResourceLimitSchema: z.ZodObject<{
 export declare const RegressionPolicySchema: z.ZodObject<{
     schema_version: z.ZodLiteral<"ketqat.regression.policy.v1">;
     changed_axes: z.ZodArray<z.ZodEnum<["source_commit", "circuit", "qiskit"]>, "many">;
-    resources: z.ZodObject<{
+    resources: z.ZodEffects<z.ZodObject<{
         depth: z.ZodOptional<z.ZodObject<{
             absolute_increase: z.ZodNumber;
             relative_increase: z.ZodNumber;
@@ -53,6 +53,32 @@ export declare const RegressionPolicySchema: z.ZodObject<{
             relative_increase: number;
         }>>;
     }, "strict", z.ZodTypeAny, {
+        depth?: {
+            absolute_increase: number;
+            relative_increase: number;
+        } | undefined;
+        size?: {
+            absolute_increase: number;
+            relative_increase: number;
+        } | undefined;
+        two_qubit_gates?: {
+            absolute_increase: number;
+            relative_increase: number;
+        } | undefined;
+    }, {
+        depth?: {
+            absolute_increase: number;
+            relative_increase: number;
+        } | undefined;
+        size?: {
+            absolute_increase: number;
+            relative_increase: number;
+        } | undefined;
+        two_qubit_gates?: {
+            absolute_increase: number;
+            relative_increase: number;
+        } | undefined;
+    }>, {
         depth?: {
             absolute_increase: number;
             relative_increase: number;
@@ -132,7 +158,7 @@ export declare const RegressionSummarySchema: z.ZodObject<{
     policy: z.ZodObject<{
         schema_version: z.ZodLiteral<"ketqat.regression.policy.v1">;
         changed_axes: z.ZodArray<z.ZodEnum<["source_commit", "circuit", "qiskit"]>, "many">;
-        resources: z.ZodObject<{
+        resources: z.ZodEffects<z.ZodObject<{
             depth: z.ZodOptional<z.ZodObject<{
                 absolute_increase: z.ZodNumber;
                 relative_increase: z.ZodNumber;
@@ -164,6 +190,32 @@ export declare const RegressionSummarySchema: z.ZodObject<{
                 relative_increase: number;
             }>>;
         }, "strict", z.ZodTypeAny, {
+            depth?: {
+                absolute_increase: number;
+                relative_increase: number;
+            } | undefined;
+            size?: {
+                absolute_increase: number;
+                relative_increase: number;
+            } | undefined;
+            two_qubit_gates?: {
+                absolute_increase: number;
+                relative_increase: number;
+            } | undefined;
+        }, {
+            depth?: {
+                absolute_increase: number;
+                relative_increase: number;
+            } | undefined;
+            size?: {
+                absolute_increase: number;
+                relative_increase: number;
+            } | undefined;
+            two_qubit_gates?: {
+                absolute_increase: number;
+                relative_increase: number;
+            } | undefined;
+        }>, {
             depth?: {
                 absolute_increase: number;
                 relative_increase: number;
@@ -233,7 +285,7 @@ export declare const RegressionSummarySchema: z.ZodObject<{
     }>;
     changed_fields: z.ZodArray<z.ZodEnum<["source_commit", "source_dirty", "case_id", "circuit_sha256", "factory_sha256", "environment.python", "environment.system", "environment.machine", "environment.kernel", "environment.ketqat_capture", "environment.qiskit", "environment.numpy", "environment.scipy", "environment.ketqat", "conditions.execution", "conditions.initial_state", "conditions.measurement", "conditions.bit_order", "conditions.backend", "conditions.noise", "conditions.qubits", "conditions.seed", "conditions.shots", "conditions.optimization_level", "conditions.basis_gates"]>, "many">;
     resources: z.ZodObject<{
-        baseline: z.ZodNullable<z.ZodObject<{
+        baseline: z.ZodNullable<z.ZodEffects<z.ZodObject<{
             depth: z.ZodOptional<z.ZodNumber>;
             size: z.ZodOptional<z.ZodNumber>;
             two_qubit_gates: z.ZodOptional<z.ZodNumber>;
@@ -245,12 +297,28 @@ export declare const RegressionSummarySchema: z.ZodObject<{
             depth?: number | undefined;
             size?: number | undefined;
             two_qubit_gates?: number | undefined;
+        }>, {
+            depth?: number | undefined;
+            size?: number | undefined;
+            two_qubit_gates?: number | undefined;
+        }, {
+            depth?: number | undefined;
+            size?: number | undefined;
+            two_qubit_gates?: number | undefined;
         }>>;
-        candidate: z.ZodNullable<z.ZodObject<{
+        candidate: z.ZodNullable<z.ZodEffects<z.ZodObject<{
             depth: z.ZodOptional<z.ZodNumber>;
             size: z.ZodOptional<z.ZodNumber>;
             two_qubit_gates: z.ZodOptional<z.ZodNumber>;
         }, "strict", z.ZodTypeAny, {
+            depth?: number | undefined;
+            size?: number | undefined;
+            two_qubit_gates?: number | undefined;
+        }, {
+            depth?: number | undefined;
+            size?: number | undefined;
+            two_qubit_gates?: number | undefined;
+        }>, {
             depth?: number | undefined;
             size?: number | undefined;
             two_qubit_gates?: number | undefined;

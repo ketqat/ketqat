@@ -41,3 +41,14 @@ test('no data and small shot budgets remain inconclusive; fixed drift is incompa
   assert.equal(inspectRegressionSummary(drift).summary.verdict,'INCOMPATIBLE')
   assert.throws(()=>inspectRegressionSummary({...drift,resources:record().resources}),/stopped/)
 })
+
+
+test('explicit undefined optional fields are rejected before arithmetic', () => {
+  for (const metric of ['depth', 'size', 'two_qubit_gates']) {
+    assert.throws(() => parseRegressionPolicy({...policy, resources:{[metric]:undefined}}), /Omit unselected fields/)
+    const invalid=record(); invalid.policy.resources[metric]=undefined
+    assert.throws(() => inspectRegressionSummary(invalid), /Omit unselected fields/)
+    const observation=record(); observation.resources.candidate[metric]=undefined
+    assert.throws(() => inspectRegressionSummary(observation), /Omit unselected fields/)
+  }
+})
