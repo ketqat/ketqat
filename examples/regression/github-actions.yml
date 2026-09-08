@@ -1,5 +1,5 @@
-# Copy into YOUR repository after reviewing/pinning the SDK commit. This runs
-# only your own test code with read permission and no KetQat/GitHub secret.
+# Copy into YOUR repository after reviewing the SDK pin and sample-project README.
+# Captures both revisions on the same runner; no private upload or extra secret.
 name: Quantum regression
 on: [pull_request]
 permissions:
@@ -9,16 +9,44 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the reviewed PR base
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: baseline
+          persist-credentials: false
+      - name: Check out the candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+      - name: Check out the pinned SDK source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ketqat/ketqat-sdk
+          ref: 1237aaaa13118f930c5060e1f7dcfe27bfcd2c8a
+          path: ketqat-sdk
+          persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.11'
-      # Supply your reviewed immutable source install in requirements-ci.txt.
-      # No public ketqat package publication is assumed.
-      - run: python -m pip install -r requirements-ci.txt
-      - run: ketqat regression capture tests/circuits.py:prepare_state --case-id prepare-state --output candidate.json
-      # baseline.json and policy.json must come from a reviewed baseline. A PR
-      # may propose changes to them but required review governs promotion.
-      - run: ketqat regression compare baseline.json candidate.json --policy policy.json --output-dir change-report
+      - name: Install the pinned regression environment
+        run: |
+          python -m pip install --require-hashes -r ketqat-sdk/requirements-regression-py311.txt
+          python -m pip install --require-hashes -r ketqat-sdk/requirements-regression-build-py311.txt
+          python -m pip install --no-build-isolation --no-deps ./ketqat-sdk/python
+      - name: Capture the reviewed baseline
+        working-directory: baseline
+        run: ketqat regression capture tests/circuits.py:prepare_state --case-id prepare-state --output "$RUNNER_TEMP/ketqat-regression/baseline.json"
+      - name: Capture the candidate in the same environment
+        working-directory: candidate
+        run: ketqat regression capture tests/circuits.py:prepare_state --case-id prepare-state --output "$RUNNER_TEMP/ketqat-regression/candidate.json"
+      # The policy comes from the reviewed base, so changing the candidate's
+      # policy cannot turn this PR's failed comparison into a pass.
+      - name: Compare using the reviewed policy
+        run: ketqat regression compare "$RUNNER_TEMP/ketqat-regression/baseline.json" "$RUNNER_TEMP/ketqat-regression/candidate.json" --policy baseline/policy.json --output-dir "$RUNNER_TEMP/ketqat-regression/report"
 # Never use pull_request_target to execute fork code with secrets. No upload or
 # pull-request write permission is needed to get an Actions step summary.
+# Only test trusted code locally. Read-only CI still executes the candidate's
+# Python, which can use its runner network; the child process is not a sandbox.

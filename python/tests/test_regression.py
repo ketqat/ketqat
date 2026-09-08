@@ -6,6 +6,8 @@ import math
 import os
 import subprocess
 import sys
+import shutil
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -23,6 +25,40 @@ def bell():
     qc.h(0)
     qc.cx(0, 1)
     return qc
+
+
+def test_copyable_project_captures_both_revisions_in_one_environment(tmp_path):
+    source = Path(__file__).resolve().parents[2] / 'examples/regression/sample-project'
+    base, candidate = tmp_path / 'baseline', tmp_path / 'candidate'
+    for target in (base, candidate):
+        shutil.copytree(source, target)
+        for args in [('init', '-q'), ('add', '.'), ('-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'Synthetic reviewed source')]:
+            subprocess.run(['git', *args], cwd=target, check=True, capture_output=True)
+    env = dict(os.environ)
+    env['PYTHONPATH'] = str(Path(__file__).resolve().parents[1] / 'src')
+    summary = tmp_path / 'actions-summary.md'
+    env['GITHUB_STEP_SUMMARY'] = str(summary)
+    cli = [sys.executable, '-m', 'ketqat_runner.cli', 'regression']
+    def invoke(args, cwd):
+        return subprocess.run([*cli, *args], cwd=cwd, env=env, capture_output=True, text=True, timeout=30)
+    evidence = tmp_path / 'evidence'
+    for name, directory in [('baseline', base), ('unchanged', candidate)]:
+        result = invoke(['capture', 'tests/circuits.py:prepare_state', '--case-id', 'prepare-state', '--output', str(evidence / (name + '.json'))], directory)
+        assert result.returncode == 0, result.stderr
+    result = invoke(['compare', str(evidence / 'baseline.json'), str(evidence / 'unchanged.json'), '--policy', str(base / 'policy.json'), '--output-dir', str(evidence / 'unchanged-report')], tmp_path)
+    assert result.returncode == 0, result.stdout + result.stderr
+    factory = candidate / 'tests/circuits.py'
+    factory.write_text(factory.read_text().replace('    circuit.cx(0, 1)\n', ''))
+    # A proposed relaxed policy must not be used by the protected-base workflow.
+    (candidate / 'policy.json').write_text('{"max_total_variation": 1}')
+    result = invoke(['capture', 'tests/circuits.py:prepare_state', '--case-id', 'prepare-state', '--output', str(evidence / 'changed.json')], candidate)
+    assert result.returncode == 0, result.stderr
+    result = invoke(['compare', str(evidence / 'baseline.json'), str(evidence / 'changed.json'), '--policy', str(base / 'policy.json'), '--output-dir', str(evidence / 'changed-report')], tmp_path)
+    assert result.returncode == 1, result.stdout + result.stderr
+    report = json.loads((evidence / 'changed-report/report.json').read_text())
+    assert report['verdict'] == 'REGRESSION'
+    assert next(c for c in report['checks'] if c['metric'] == 'total_variation')['estimate'] == pytest.approx(0.5)
+    assert 'REGRESSION' in summary.read_text()
 
 
 def pair():
