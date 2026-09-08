@@ -69,6 +69,8 @@ def prepare_summary(local_report: dict) -> dict:
 def preview(report_path: Path, output: Path) -> str:
     summary = prepare_summary(load_json(report_path))
     payload = (json.dumps(summary, indent=2, allow_nan=False) + '\n').encode()
+    if len(payload) > MAX_UPLOAD_BYTES:
+        raise ValueError('Preview exceeds the 100 KiB upload limit.')
     # Private by default. Preview files still contain metrics and stable hashes.
     fd = os.open(output, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     with os.fdopen(fd, 'wb') as handle:
