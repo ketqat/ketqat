@@ -228,6 +228,34 @@ def test_sample_runs_real_simulation_and_returns_regression(tmp_path):
     assert 'Intentional' in report['sample']
 
 
+@pytest.mark.parametrize('contents,worker_exit', [
+    (b'{"private-input":', 0),
+    (b'{"private-input":"secret-string-do-not-log"}', 0),
+    (b'\xffprivate-input', 0),
+    (b'', 7),
+])
+def test_partial_worker_output_produces_portable_error_snapshot(tmp_path, contents, worker_exit):
+    # Exercise the actual process boundary: user code terminates the worker
+    # after an incomplete write, including the misleading exit-zero case.
+    factory = tmp_path / 'partial.py'
+    factory.write_text('import os, sys\nfrom pathlib import Path\n'
+        'def circuit():\n'
+        f'    Path(sys.argv[3]).write_bytes({contents!r})\n'
+        f'    os._exit({worker_exit})\n')
+    target = tmp_path / 'error.json'
+    result = cli('capture', f'{factory}:circuit', '--case-id', 'partial', '--output', target)
+    assert result.returncode == EXIT_CODES['ERROR']
+    snapshot = Snapshot.model_validate(load_json(target))
+    assert snapshot.status == 'ERROR' and snapshot.resources is None
+    assert 'valid snapshot' in snapshot.reason
+    if worker_exit:
+        assert f'exit {worker_exit}' in snapshot.reason
+    assert 'private-input' not in result.stdout + result.stderr + target.read_text()
+    baseline = capture(QuantumCircuit(1), case_id='partial')
+    report = compare(baseline, snapshot, Policy(max_total_variation=0.05))
+    assert report['verdict'] == 'ERROR' and report['exit_code'] == 4
+
+
 def test_html_escapes_private_data():
     b,c=pair()
     report=compare(b,c,Policy(max_total_variation=0.1))

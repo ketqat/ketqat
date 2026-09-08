@@ -108,11 +108,18 @@ def run_capture(args) -> int:
                     process.wait()
                     raise
             if code != 0 or not output.exists():
-                snapshot = not_executed(args.case_id, 'ERROR', 'Local factory process failed without a valid snapshot; check local disk space, permissions and capture size.')
+                exit_detail = f' (exit {code})' if code != 0 else ''
+                snapshot = not_executed(args.case_id, 'ERROR', f'Local factory process failed{exit_detail} without a valid snapshot; check local disk space, permissions and capture size.')
             else:
                 snapshot = Snapshot.model_validate(load_json(output))
         except subprocess.TimeoutExpired:
             snapshot = not_executed(args.case_id, 'ERROR', f'Capture timed out after {args.timeout} seconds.')
+        except (OSError, ValueError):
+            # A worker can exit successfully after writing a partial, oversized,
+            # or invalid snapshot. Preserve portable failure evidence without
+            # copying private file contents or validation details into it.
+            snapshot = not_executed(args.case_id, 'ERROR',
+                'Local capture could not produce a valid snapshot; check local disk space, permissions, capture size and factory behavior.')
         save_snapshot(snapshot, args.output)
     print(f'{snapshot.status}: {snapshot.reason or "Local snapshot written; no upload."}')
     return 0 if snapshot.status == 'EXECUTED' else EXIT_CODES[snapshot.status]
