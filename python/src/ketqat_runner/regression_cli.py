@@ -1,6 +1,7 @@
 """CLI integration. Only the customer's local subprocess imports their factory."""
 from __future__ import annotations
 
+import argparse
 import hashlib
 import importlib.util
 import os
@@ -14,6 +15,18 @@ from .regression import EXIT_CODES, Policy, Snapshot, capture, compare, load_jso
 from .regression_report import markdown, write_reports
 
 
+def bounded_integer(minimum: int, maximum: int):
+    def parse(value: str) -> int:
+        try:
+            number = int(value)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f'Use an integer from {minimum} to {maximum}.') from None
+        if not minimum <= number <= maximum:
+            raise argparse.ArgumentTypeError(f'Use an integer from {minimum} to {maximum}.')
+        return number
+    return parse
+
+
 def add_parser(subcommands):
     parser = subcommands.add_parser('regression', help='Local Qiskit regression checks; optional previewed private summary upload.')
     commands = parser.add_subparsers(dest='regression_command', required=True)
@@ -21,9 +34,9 @@ def add_parser(subcommands):
     run.add_argument('factory', help='Local path.py:function returning QuantumCircuit. Runs your code locally.')
     run.add_argument('--case-id', required=True)
     run.add_argument('--output', type=Path, required=True)
-    run.add_argument('--seed', type=int, default=42)
+    run.add_argument('--seed', type=bounded_integer(0, 2**32-1), default=42, metavar='0..4294967295')
     run.add_argument('--optimization-level', type=int, choices=range(4), default=1)
-    run.add_argument('--shots', type=int, help='Optional ideal simulated sampling budget; omitted means exact probabilities.')
+    run.add_argument('--shots', type=bounded_integer(1, 10_000_000), metavar='1..10000000', help='Optional ideal simulated sampling budget; omitted means exact probabilities.')
     run.add_argument('--timeout', type=int, choices=range(1,301), metavar='1..300', default=60)
     diff = commands.add_parser('compare', help='Compare two local snapshots; never updates a baseline.')
     diff.add_argument('baseline', type=Path)

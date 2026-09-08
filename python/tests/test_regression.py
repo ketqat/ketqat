@@ -274,3 +274,18 @@ def test_sample_without_optional_qiskit_records_not_run(tmp_path, monkeypatch):
     assert report['verdict'] == 'NOT_RUN' and report['checks'] == []
     assert report['baseline']['status'] == report['candidate']['status'] == 'NOT_RUN'
     assert 'not fully executed' in report['sample']
+
+
+def test_capture_rejects_invalid_budgets_before_starting_factory(capsys):
+    import argparse
+    from ketqat_runner.regression_cli import add_parser
+    parser = argparse.ArgumentParser()
+    add_parser(parser.add_subparsers(dest='command', required=True))
+    base = ['regression', 'capture', 'not-executed.py:factory', '--case-id', 'case', '--output', 'not-written.json']
+    for flag, value in [('--shots', '0'), ('--shots', '10000001'), ('--seed', '-1'), ('--seed', '4294967296')]:
+        with pytest.raises(SystemExit) as stopped:
+            parser.parse_args(base + [flag, value])
+        assert stopped.value.code == 2
+        assert 'Use an integer from' in capsys.readouterr().err
+    valid = parser.parse_args(base + ['--shots', '1', '--seed', '4294967295'])
+    assert valid.shots == 1 and valid.seed == 2**32 - 1
