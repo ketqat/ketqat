@@ -208,18 +208,22 @@ def cli(*args,env=None):
 def test_real_factory_cli_comparison_and_actions_summary(tmp_path):
     factory=tmp_path/'factory.py'
     factory.write_text('from qiskit import QuantumCircuit\ndef circuit():\n    return QuantumCircuit(1)\n')
+    snapshots = tmp_path/'new-output-directory'/'snapshots'
     for side in ('baseline','candidate'):
-        r=cli('capture',f'{factory}:circuit','--case-id','test','--output',tmp_path/f'{side}.json')
+        r=cli('capture',f'{factory}:circuit','--case-id','test','--output',snapshots/f'{side}.json')
         assert r.returncode == 0,r.stderr+r.stdout
+        assert (snapshots/f'{side}.json').stat().st_mode & 0o077 == 0
     policy=tmp_path/'policy.json'
     policy.write_text(Policy(max_total_variation=0.01).model_dump_json())
     env=dict(os.environ,GITHUB_STEP_SUMMARY=str(tmp_path/'summary.md'))
-    r=cli('compare',tmp_path/'baseline.json',tmp_path/'candidate.json','--policy',policy,'--output-dir',tmp_path/'report',env=env)
+    r=cli('compare',snapshots/'baseline.json',snapshots/'candidate.json','--policy',policy,'--output-dir',tmp_path/'report',env=env)
     assert r.returncode == 0,r.stderr+r.stdout
     report=json.loads((tmp_path/'report/report.json').read_text())
     assert report['verdict'] == 'WITHIN_POLICY'
     assert 'WITHIN_POLICY' in (tmp_path/'summary.md').read_text()
     assert (tmp_path/'report/report.html').exists()
+    assert (tmp_path/'report').stat().st_mode & 0o077 == 0
+    assert all(path.stat().st_mode & 0o077 == 0 for path in (tmp_path/'report').iterdir())
 
 
 def test_factory_failure_and_timeout_are_not_green_and_secrets_not_logged(tmp_path):

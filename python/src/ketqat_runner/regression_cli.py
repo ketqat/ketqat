@@ -78,6 +78,8 @@ def worker(factory: str, case_id: str, output: Path, seed: int, level: int, shot
 def run_capture(args) -> int:
     if args.output.exists():
         raise ValueError('Output already exists; use a new path to preserve previous evidence.')
+    # Fail before executing customer code if its evidence destination is unusable.
+    args.output.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     with tempfile.TemporaryDirectory(prefix='ketqat-capture-') as temporary:
         output = Path(temporary) / 'snapshot.json'
         command = [sys.executable, '-m', 'ketqat_runner.regression_cli', args.factory, args.case_id,

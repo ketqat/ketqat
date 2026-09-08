@@ -9,6 +9,7 @@ import hashlib
 import importlib.metadata
 import json
 import math
+import os
 import platform
 import subprocess
 from datetime import datetime, timezone
@@ -336,11 +337,16 @@ def load_json(path: Path) -> dict[str, Any]:
                       parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Non-finite JSON is invalid.')))
 
 
+def write_private_text(path: Path, content: str) -> None:
+    fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    with os.fdopen(fd, 'w', encoding='utf-8') as handle:
+        handle.write(content)
+
+
 def save_snapshot(snapshot: Snapshot, path: Path) -> None:
     # Never overwrite a baseline/candidate implicitly. Local filesystem/Git
     # permissions govern these files; team approval is a hosted responsibility.
     payload = snapshot.model_dump_json(indent=2) + '\n'
     if len(payload.encode('utf-8')) > MAX_FILE_BYTES:
         raise ValueError('Snapshot exceeds the 2 MiB local file limit; reduce the test circuit.')
-    with path.open('x', encoding='utf-8') as handle:
-        handle.write(payload)
+    write_private_text(path, payload)

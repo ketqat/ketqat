@@ -62,8 +62,9 @@ summary{{cursor:pointer;padding:16px 0;font-weight:600}}.tag{{font-family:monosp
 
 
 def write_reports(directory: Path, report: dict, baseline: dict, candidate: dict) -> None:
+    from .regression import write_private_text
     # A fresh directory prevents stale success reports surviving a failed rerun.
-    directory.mkdir(parents=True, exist_ok=False)
-    directory.joinpath('report.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n', encoding='utf-8')
-    directory.joinpath('report.html').write_text(html_report(report, baseline, candidate), encoding='utf-8')
-    directory.joinpath('summary.md').write_text(markdown(report), encoding='utf-8')
+    directory.mkdir(parents=True, exist_ok=False, mode=0o700)
+    write_private_text(directory / 'report.json', json.dumps(report, indent=2, allow_nan=False) + '\n')
+    write_private_text(directory / 'report.html', html_report(report, baseline, candidate))
+    write_private_text(directory / 'summary.md', markdown(report))

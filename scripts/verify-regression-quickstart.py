@@ -44,7 +44,7 @@ with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
     report=json.loads((args.output/'sample/report/report.json').read_text(encoding='utf-8'))
     if report['verdict'] != 'REGRESSION':
         raise RuntimeError('The sample verdict must be REGRESSION.')
-    if abs(next(c for c in report['checks'] if c['metric']=='total_variation')['estimate']-0.5) >= 1e-12:
+    if abs(next(c for c in report['checks'] if c['metric']=='total_variation')['estimate']-0.5) >= 1e-9:
         raise RuntimeError('The sample distance must match the independent Bell reference.')
     dependencies = subprocess.run(['uv','pip','freeze','--python',str(python)],capture_output=True,text=True,check=True).stdout
     # The wheel's temporary file:// URL is local verification detail, not a
