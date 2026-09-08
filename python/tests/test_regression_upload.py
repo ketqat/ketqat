@@ -77,7 +77,7 @@ def test_preview_recomputes_and_redacts_forged_report_fields(tmp_path):
     assert hashlib.sha256(output.read_bytes()).hexdigest() == fingerprint
     assert output.stat().st_mode & 0o077 == 0
     assert 'secret-' not in output.read_text()
-    with pytest.raises(FileExistsError):
+    with pytest.raises(ValueError, match='Choose a new output path'):
         preview(path, output)
     report['verdict'] = 'WITHIN_POLICY'
     with pytest.raises(ValueError, match='differs'):
@@ -228,3 +228,19 @@ def test_cli_invalid_summary_explains_recovery_without_network_or_private_values
     assert 'Regenerate the preview from the full local report' in error
     assert 'Local comparison verdict is unchanged' in error
     assert 'private-customer-value' not in error
+
+
+def test_existing_preview_preserves_bytes_and_explains_no_upload_was_attempted(tmp_path, capsys):
+    from types import SimpleNamespace
+    from ketqat_runner.regression_cli import run
+    report = tmp_path / 'local.json'
+    report.write_text(json.dumps(reports()[1]))
+    output = tmp_path / 'private-path-do-not-log.json'
+    original = b'previous-reviewed-private-content'
+    output.write_bytes(original)
+    assert run(SimpleNamespace(regression_command='preview', report=report, output=output)) == 4
+    error = capsys.readouterr().err
+    assert 'PREVIEW: FAILED. UPLOAD: NOT_REQUESTED' in error
+    assert 'Choose a new output path' in error
+    assert 'private-path-do-not-log' not in error and 'previous-reviewed-private-content' not in error
+    assert output.read_bytes() == original

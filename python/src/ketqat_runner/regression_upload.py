@@ -98,7 +98,10 @@ def preview(report_path: Path, output: Path) -> str:
     if len(payload) > MAX_UPLOAD_BYTES:
         raise RegressionUploadError('Preview exceeds the 100 KiB upload limit.')
     # Private by default. Preview files still contain metrics and stable hashes.
-    fd = os.open(output, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        fd = os.open(output, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        raise RegressionUploadError('Preview output already exists. Choose a new output path to preserve the previously reviewed file.') from None
     with os.fdopen(fd, 'wb') as handle:
         handle.write(payload)
     fingerprint = hashlib.sha256(payload).hexdigest()

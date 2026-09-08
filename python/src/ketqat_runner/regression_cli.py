@@ -178,7 +178,8 @@ def run(args) -> int:
             # Only authored transport errors (including subclasses) are safe to
             # display. Arbitrary ValueError/validation details can contain input.
             message = str(exc) if isinstance(exc, RegressionUploadError) else type(exc).__name__
-            print(f'UPLOAD: FAILED_OR_NOT_REQUESTED. {message}. Local comparison verdict is unchanged.', file=sys.stderr)
+            prefix = 'PREVIEW: FAILED. UPLOAD: NOT_REQUESTED' if args.regression_command == 'preview' else 'UPLOAD: FAILED'
+            print(f'{prefix}. {message}. Local comparison verdict is unchanged.', file=sys.stderr)
         else:
             print(f'ERROR: {type(exc).__name__}. No successful report was produced. Check input schema, file paths and output-directory uniqueness.', file=sys.stderr)
         return EXIT_CODES['ERROR']
