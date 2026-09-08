@@ -36,10 +36,13 @@ with tempfile.TemporaryDirectory(prefix='ketqat-regression-verify-') as tmp:
     result = subprocess.run([str(temp/'venv/bin/ketqat'),'regression','sample',
                              '--output-dir',str(args.output.resolve()/'sample')],cwd=temp,env=env)
     elapsed = time.monotonic()-started
-    assert result.returncode == 1, 'The intentional sample must fail CI with REGRESSION.'
+    if result.returncode != 1:
+        raise RuntimeError('The intentional sample must fail CI with REGRESSION.')
     report=json.loads((args.output/'sample/report/report.json').read_text())
-    assert report['verdict'] == 'REGRESSION'
-    assert abs(next(c for c in report['checks'] if c['metric']=='total_variation')['estimate']-0.5) < 1e-12
+    if report['verdict'] != 'REGRESSION':
+        raise RuntimeError('The sample verdict must be REGRESSION.')
+    if abs(next(c for c in report['checks'] if c['metric']=='total_variation')['estimate']-0.5) >= 1e-12:
+        raise RuntimeError('The sample distance must match the independent Bell reference.')
     dependencies = subprocess.run(['uv','pip','freeze','--python',str(python)],capture_output=True,text=True,check=True).stdout
     # The wheel's temporary file:// URL is local verification detail, not a
     # distributable installation claim.

@@ -5,7 +5,7 @@
 The current priority is a low-touch business helping small Qiskit software teams
 catch regressions on PRs and SDK upgrades. The free local/CI comparison is the
 core; private team baseline/policy management and history are the proposed paid
-service. See [ADR 0015](https://github.com/ketqat/ketqat-planning/blob/feature/commercial-regression/docs/architecture/adr/0015-continuous-qiskit-regression-business.md).
+service. See [ADR 0015](https://github.com/ketqat/ketqat-planning/blob/main/docs/architecture/adr/0015-continuous-qiskit-regression-business.md).
 
 KetQat's own software subscription and test payment integration are authorized by
 the maintainer's 2026-09-08 commercial rebuild directive. Prior blanket no-billing,

@@ -1,0 +1,10 @@
+# Only Qiskit changes in the regression CI matrix. Dependencies use the shared hashed lock.
+qiskit==2.5.2 \
+    --hash=sha256:2835e38af67932e592562c7b1b6b7fadd015bd1101a1320e2c5051de12508428 \
+    --hash=sha256:28fcb983e565b8f027a13ef43cda7aaeb1f1a6caf9df07408708abcf7bc0b59d \
+    --hash=sha256:4aa7ddb0d9c1cd14298bf2fdd242646a5e0eaeebdebd2f31d5d2a018c75fa744 \
+    --hash=sha256:c2eab89804161dd927d25d521c6c43af1bcd17042e6b02124166d6d07a9c9cb1 \
+    --hash=sha256:c559ee1e2a92b5ded6a130f1fd8dc4bea19a5b35e99d39180889746f12550666 \
+    --hash=sha256:cf05388c717392cff5d01be4ea9b45652c2709a5c697c174428d8863089b6247 \
+    --hash=sha256:d436cd45db22ea0132be815930d7c90343774756da9620dee68714968966f65e \
+    --hash=sha256:d7940da5ea03d638bace6f9cc47bb892502c85a9c05eebe1cbe3c0e693586109

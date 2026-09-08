@@ -104,7 +104,7 @@ class Snapshot(Record):
 
 class ResourceLimit(Record):
     absolute_increase: int = Field(default=0, ge=0, le=10_000_000)
-    relative_increase: float = Field(default=0.0, ge=0, le=100)
+    relative_increase: float = Field(default=0.0, ge=0, le=1, description="Fractional increase: 0.1 means +10%, 1 means +100%.")
 
 
 class Policy(Record):

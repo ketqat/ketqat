@@ -7,16 +7,21 @@ separate from any future KetQat subscription.
 
 ## Install from this repository
 
-The new regression commands are on `feature/commercial-regression` until its PR
-is merged. No public PyPI or npm release is assumed. Review the PR, then use the
-exact commit from that review for reproducible installation.
+The source installation below works without a published PyPI or npm release.
+Before [PR #265](https://github.com/ketqat/ketqat-sdk/pull/265) merges, check out
+its reviewed commit; after merge, use `main`. Record the exact commit you install
+with `git rev-parse HEAD` and pin it in your CI requirements.
 
 ```bash
-git clone --branch feature/commercial-regression https://github.com/ketqat/ketqat-sdk.git
+git clone https://github.com/ketqat/ketqat-sdk.git
 cd ketqat-sdk
+# Reviewable source path, also available after PR #265 merges:
+git fetch origin pull/265/head
+git checkout --detach FETCH_HEAD
+git rev-parse HEAD
 python3.11 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements-regression-py311.txt
+python -m pip install --require-hashes -r requirements-regression-py311.txt
 python -m pip install --no-deps ./python
 ketqat regression sample --output-dir sample
 ```
@@ -26,6 +31,10 @@ Bell circuit, executed with real ideal simulation. It is not a reported Qiskit
 bug. Open `sample/report/report.html`; its measured total-variation distance
 should be approximately 0.5. JSON and GitHub Actions Markdown are alongside it.
 The sample is a check of the product, not customer adoption or hardware evidence.
+
+Resource limits use `absolute_increase` in gate/depth units and
+`relative_increase` as a fraction from 0 to 1: `0.1` means +10%, `1` means +100%.
+Both allowances are added to the baseline; the total is an upper limit.
 
 ## Add one call to your existing Python test
 

@@ -1,10 +1,8 @@
 """CLI integration. Only the customer's local subprocess imports their factory."""
 from __future__ import annotations
 
-import argparse
 import hashlib
 import importlib.util
-import json
 import os
 import signal
 import subprocess
