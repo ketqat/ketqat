@@ -3,10 +3,19 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/ketqat/ketqat-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ketqat/ketqat-sdk/actions)
 
-**[KetQat](https://ketqat.com) is Quantum Decision Intelligence: it estimates what a
-computation would require on a fault-tolerant quantum computer, and refuses to answer
-where the evidence does not support one.** No dates, no prices, no vendor rankings --
-see [what it will not tell you](https://ketqat.com/intelligence/limitations).
+**Catch quantum regressions before you merge.** KetQat helps small Qiskit teams
+compare circuit changes and SDK upgrades against an explicit baseline and policy.
+Run the checks in your local environment or GitHub Actions and get a portable
+report explaining what changed, which limits were exceeded and what to check next.
+
+**[Try the free Qiskit quickstart](docs/regression-quickstart.md).** No account,
+QPU or upload is required. Source code and circuit data stay on your machine.
+Private team baseline/policy/history management is the planned paid value; it is
+not sold by this CLI. The local regression slice is under review in
+[SDK #264](https://github.com/ketqat/ketqat-sdk/issues/264).
+
+Existing Quantum Decision Intelligence resource estimates and research records
+remain available. They make no calendar forecasts or vendor recommendations.
 
 Underneath that sits an open, vendor-neutral registry for reproducible quantum
 error-correction and quantum-algorithm research: run a real benchmark locally, publish the
@@ -86,9 +95,8 @@ The web app owns persistence, UI, APIs, authorization, charts, and deployment.
 
 ## Install
 
-```bash
-npm install ketqat-sdk
-```
+Public npm release is pending. For existing TypeScript consumers, use the
+reviewed exact-commit [source installation](docs/quickstart.md).
 
 The npm tarball contains only the TypeScript SDK runtime, declarations, schemas, and examples. The Python runner is a separate PyPI distribution named `ketqat`; Python source and test caches are not part of `ketqat-sdk`.
 

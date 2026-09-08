@@ -1,0 +1,3 @@
+# Default quickstart: shared hashed dependencies plus one Qiskit version.
+-r requirements-regression-base-py311.txt
+-r requirements-regression-qiskit-2.5.2.txt

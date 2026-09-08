@@ -187,7 +187,8 @@ jobs:
         run: |
           python -m venv /tmp/qec
           /tmp/qec/bin/pip install --quiet \
-            "https://github.com/ketqat/ketqat-benchmarks/archive/refs/heads/main.tar.gz#egg=ketqat-benchmarks[decoders]"
+            "ketqat-benchmarks[decoders] @ https://github.com/ketqat/ketqat-benchmarks/archive/8d429a8e5d4211c15babef458170c3a05e33596f.tar.gz" \
+            "tesseract-decoder==0.1.1.dev20260822020007"
           cd /tmp
           /tmp/qec/bin/python -m ketqat_benchmarks.decoder_comparison \
             --distance 3 --rounds 3 --noise 0.02 --max-shots 2000 --output /tmp/qec.json
