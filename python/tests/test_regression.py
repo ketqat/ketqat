@@ -235,3 +235,15 @@ def test_html_escapes_private_data():
     assert '<script>' not in page
     assert '&lt;script&gt;' in page
     assert "default-src 'none'" in page
+
+
+def test_markdown_escapes_snapshot_reason_and_all_report_text():
+    from ketqat_runner.regression_report import markdown
+    bad = '[open](https://untrusted.example) <script>alert(1)</script>\n# injected heading'
+    report = {'case_id': 'safe-case', 'verdict': 'ERROR', 'conclusion': bad,
+              'checks': [], 'next_steps': [bad], 'scope': bad}
+    rendered = markdown(report)
+    assert '<script>' not in rendered
+    assert '[open](' not in rendered
+    assert '\n# injected heading' not in rendered
+    assert '&lt;script&gt;' in rendered
