@@ -98,8 +98,22 @@ def test_sdk_axis_allowed_only_when_explicit_and_never_hides_environment():
 
 def test_changed_circuit_is_incompatible_when_only_sdk_is_intended():
     b,c=pair()
-    c=amended(c,circuit=None,circuit_sha256='a'*64)
+    changed = bell()
+    changed.z(0)
+    c = capture(changed, case_id='bell')
     assert compare(b,c,Policy(changed_axes=['qiskit'],max_total_variation=0.1))['verdict'] == 'INCOMPATIBLE'
+
+
+def test_executed_snapshot_cannot_drop_its_local_circuit_instructions():
+    baseline, _ = pair()
+    for remove in (False, True):
+        stripped = baseline.model_dump()
+        if remove:
+            del stripped['circuit']
+        else:
+            stripped['circuit'] = None
+        with pytest.raises(ValidationError, match='local circuit instructions'):
+            Snapshot.model_validate(stripped)
 
 
 def test_no_global_phase_equivalence_claim():

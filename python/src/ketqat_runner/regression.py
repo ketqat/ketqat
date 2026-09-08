@@ -73,8 +73,8 @@ class Snapshot(Record):
             if not self.reason or any(value is not None for value in (self.conditions, self.circuit_sha256, self.circuit, self.resources, self.probabilities, self.counts)):
                 raise ValueError('Non-execution needs a reason and cannot contain executed circuit data or observations.')
             return self
-        if not self.conditions or not self.circuit_sha256:
-            raise ValueError('Executed snapshots need conditions and a circuit fingerprint.')
+        if not self.conditions or not self.circuit_sha256 or self.circuit is None:
+            raise ValueError('Executed snapshots need conditions, local circuit instructions and a circuit fingerprint.')
         required = {'python', 'system', 'machine', 'kernel', 'ketqat_capture', 'qiskit', 'numpy', 'scipy', 'ketqat'}
         if set(self.environment) != required or any(not v or len(v) > 200 or v == 'not_installed' for v in self.environment.values()):
             raise ValueError('Executed snapshots require complete, bounded environment versions.')
