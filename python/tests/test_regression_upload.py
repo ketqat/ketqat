@@ -166,3 +166,37 @@ def test_ambiguous_server_acknowledgements_are_rejected(tmp_path, monkeypatch):
         opener = SimpleNamespace(open=lambda *args, **kwargs: BytesIO(body))
         with pytest.raises(ValueError):
             upload(path, fingerprint, 'repository-test', 'https://ketqat.com', opener=opener)
+
+
+def test_cli_reports_authored_json_failures_without_leaking_input(tmp_path, monkeypatch, capsys):
+    from io import BytesIO
+    from types import SimpleNamespace
+    from ketqat_runner import regression_upload
+    from ketqat_runner.regression_cli import run
+    from ketqat_runner.regression_upload import RegressionUploadError
+
+    path = tmp_path / 'summary.json'
+    path.write_text(json.dumps(prepare_summary(reports()[1])))
+    monkeypatch.setenv('KETQAT_REGRESSION_TOKEN', 'kqr_' + 'a' * 43)
+    args = SimpleNamespace(regression_command='upload', summary=path,
+        confirm_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        repository='repository-test', server='https://ketqat.com')
+    for body in (b'', b'<html>private-processor-body</html>', b'\xffprivate-processor-body'):
+        monkeypatch.setattr(regression_upload, 'build_opener', lambda *a: SimpleNamespace(open=lambda *a, **kw: BytesIO(body)))
+        assert run(args) == 4
+        error = capsys.readouterr().err
+        assert 'Server acknowledgement is not valid JSON' in error
+        assert 'private-processor-body' not in error and 'kqr_' not in error
+
+    class SpecializedUploadError(RegressionUploadError):
+        pass
+    def authored(*args):
+        raise SpecializedUploadError('Review the confirmed summary.')
+    monkeypatch.setattr(regression_upload, 'upload', authored)
+    assert run(args) == 4
+    assert 'Review the confirmed summary.' in capsys.readouterr().err
+    def untrusted(*args):
+        raise ValueError('private-input-value')
+    monkeypatch.setattr(regression_upload, 'upload', untrusted)
+    assert run(args) == 4
+    assert 'private-input-value' not in capsys.readouterr().err

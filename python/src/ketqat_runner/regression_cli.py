@@ -167,8 +167,10 @@ def run(args) -> int:
     except Exception as exc:
         # Validation exceptions can contain the invalid value (possibly private).
         if args.regression_command in ('upload', 'preview'):
-            # Transport errors are deliberately authored, without server response bodies or credentials.
-            message = str(exc) if type(exc) is ValueError else type(exc).__name__
+            from .regression_upload import RegressionUploadError
+            # Only authored transport errors (including subclasses) are safe to
+            # display. Arbitrary ValueError/validation details can contain input.
+            message = str(exc) if isinstance(exc, RegressionUploadError) else type(exc).__name__
             print(f'UPLOAD: FAILED_OR_NOT_REQUESTED. {message}. Local comparison verdict is unchanged.', file=sys.stderr)
         else:
             print(f'ERROR: {type(exc).__name__}. No successful report was produced. Check input schema, file paths and output-directory uniqueness.', file=sys.stderr)

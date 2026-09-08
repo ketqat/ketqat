@@ -19,6 +19,28 @@ from .regression import Policy, Snapshot, compare, load_json
 MAX_UPLOAD_BYTES = 100 * 1024
 
 
+class RegressionUploadError(ValueError):
+    """An authored, safe-to-display error; never includes input or response values."""
+
+
+def _strict_json(payload: bytes, label: str):
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise RegressionUploadError(f'{label} contains duplicate JSON keys.')
+            value[key] = item
+        return value
+
+    def reject_constant(_):
+        raise RegressionUploadError(f'{label} contains non-finite JSON.')
+
+    try:
+        return json.loads(payload, object_pairs_hook=unique, parse_constant=reject_constant)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise RegressionUploadError(f'{label} is not valid JSON. No response or input contents are displayed.') from None
+
+
 def validate_summary(payload: dict) -> None:
     schema = json.loads(files('ketqat_runner').joinpath('schemas/regression-summary.schema.json').read_text())
     Draft7Validator(schema).validate(payload)
@@ -31,7 +53,7 @@ def prepare_summary(local_report: dict) -> dict:
     policy = Policy.model_validate(local_report['policy'])
     report = compare(baseline, candidate, policy)
     if report['verdict'] != local_report['verdict'] or report['exit_code'] != local_report['exit_code']:
-        raise ValueError('The local report verdict differs from its recorded evidence.')
+        raise RegressionUploadError('The local report verdict differs from its recorded evidence.')
     selected = set(policy.resources)
     stopped = report['verdict'] in ('ERROR', 'NOT_RUN', 'INCOMPATIBLE')
 
@@ -68,7 +90,7 @@ def preview(report_path: Path, output: Path) -> str:
     summary = prepare_summary(load_json(report_path))
     payload = (json.dumps(summary, indent=2, allow_nan=False) + '\n').encode()
     if len(payload) > MAX_UPLOAD_BYTES:
-        raise ValueError('Preview exceeds the 100 KiB upload limit.')
+        raise RegressionUploadError('Preview exceeds the 100 KiB upload limit.')
     # Private by default. Preview files still contain metrics and stable hashes.
     fd = os.open(output, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     with os.fdopen(fd, 'wb') as handle:
@@ -91,32 +113,24 @@ class NoRedirect(HTTPRedirectHandler):
 def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server: str,
            *, opener=None, sleep=time.sleep) -> dict:
     if summary_path.stat().st_size > MAX_UPLOAD_BYTES:
-        raise ValueError('Summary exceeds 100 KiB.')
+        raise RegressionUploadError('Summary exceeds 100 KiB.')
     payload = summary_path.read_bytes()
     if not re.fullmatch(r'[a-f0-9]{64}', confirmed_sha256) or hashlib.sha256(payload).hexdigest() != confirmed_sha256:
-        raise ValueError('Review the exact preview file and pass its SHA256; file changed or confirmation missing.')
-    def unique(pairs):
-        value = {}
-        for key, item in pairs:
-            if key in value:
-                raise ValueError('Duplicate JSON keys are invalid.')
-            value[key] = item
-        return value
-    summary = json.loads(payload, object_pairs_hook=unique,
-                         parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Non-finite JSON is invalid.')))
+        raise RegressionUploadError('Review the exact preview file and pass its SHA256; file changed or confirmation missing.')
+    summary = _strict_json(payload, 'Confirmed summary')
     validate_summary(summary)
     if not re.fullmatch(r'[A-Za-z0-9_-]{8,80}', repository_id):
-        raise ValueError('Use the repository ID from your private workspace.')
+        raise RegressionUploadError('Use the repository ID from your private workspace.')
     origin = urlsplit(server)
     if origin.username or origin.password or origin.query or origin.fragment or origin.path not in ('', '/'):
-        raise ValueError('Server must be an origin with no credentials, query or path.')
+        raise RegressionUploadError('Server must be an origin with no credentials, query or path.')
     if origin.scheme != 'https' and not (origin.scheme == 'http' and origin.hostname in ('127.0.0.1', 'localhost', '::1')):
-        raise ValueError('Uploads require HTTPS; HTTP is allowed only for a local development server.')
+        raise RegressionUploadError('Uploads require HTTPS; HTTP is allowed only for a local development server.')
     if not origin.hostname:
-        raise ValueError('Missing server hostname.')
+        raise RegressionUploadError('Missing server hostname.')
     token = os.environ.get('KETQAT_REGRESSION_TOKEN', '')
     if not re.fullmatch(r'kqr_[A-Za-z0-9_-]{43}', token):
-        raise ValueError('Set a scoped KETQAT_REGRESSION_TOKEN in the environment; never pass it on the command line.')
+        raise RegressionUploadError('Set a scoped KETQAT_REGRESSION_TOKEN in the environment; never pass it on the command line.')
     endpoint = server.rstrip('/') + f'/api/regression/repositories/{repository_id}/reports'
     opener = opener or build_opener(NoRedirect())
     for attempt in range(3):
@@ -128,15 +142,14 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
             with opener.open(request, timeout=10) as response:
                 body = response.read(8193)
                 if len(body) > 8192:
-                    raise ValueError('Unexpected upload response size.')
-                result = json.loads(body, object_pairs_hook=unique,
-                                    parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Non-finite acknowledgement JSON is invalid.')))
+                    raise RegressionUploadError('Unexpected upload response size.')
+                result = _strict_json(body, 'Server acknowledgement')
                 if not isinstance(result, dict):
-                    raise ValueError('Server acknowledgement must be a JSON object.')
+                    raise RegressionUploadError('Server acknowledgement must be a JSON object.')
                 if (result.get('upload') not in ('STORED', 'DUPLICATE') or
                     result.get('verdict') != summary['verdict'] or
                     not re.fullmatch(r'[A-Za-z0-9_-]{8,80}', result.get('report_id', ''))):
-                    raise ValueError('Server did not acknowledge the report and original verdict.')
+                    raise RegressionUploadError('Server did not acknowledge the report and original verdict.')
                 return {key: result[key] for key in ('upload', 'verdict', 'report_id')}
         except HTTPError as error:
             code = error.code
@@ -150,10 +163,10 @@ def upload(summary_path: Path, confirmed_sha256: str, repository_id: str, server
                         404: 'Repository unavailable to this credential.', 409: 'Review the active baseline and policy; re-run locally.',
                         413: 'Summary too large.', 422: 'Summary failed validation.',
                         429: 'Workspace usage or request limit reached.'}
-            raise ValueError(f'UPLOAD_FAILED HTTP {code}: {guidance.get(code, "Service unavailable; keep the local report and retry later.")}') from None
+            raise RegressionUploadError(f'UPLOAD_FAILED HTTP {code}: {guidance.get(code, "Service unavailable; keep the local report and retry later.")}') from None
         except (URLError, TimeoutError):
             if attempt < 2:
                 sleep(2 ** (attempt + 1))
                 continue
-            raise ValueError('UPLOAD_FAILED: bounded network retries exhausted; local comparison remains valid.') from None
-    raise ValueError('UPLOAD_FAILED: no acknowledgement.')
+            raise RegressionUploadError('UPLOAD_FAILED: bounded network retries exhausted; local comparison remains valid.') from None
+    raise RegressionUploadError('UPLOAD_FAILED: no acknowledgement.')
