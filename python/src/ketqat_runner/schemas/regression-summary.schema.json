@@ -165,6 +165,7 @@
               "source_dirty",
               "case_id",
               "circuit_sha256",
+              "factory",
               "factory_sha256",
               "environment.python",
               "environment.system",
@@ -188,7 +189,7 @@
               "conditions.basis_gates"
             ]
           },
-          "maxItems": 29
+          "maxItems": 30
         },
         "resources": {
           "type": "object",

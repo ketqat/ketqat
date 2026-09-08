@@ -24,11 +24,14 @@ def reports():
     missing = Snapshot.model_validate(b.model_dump() | {'resources': None, 'probabilities': None})
     incompatible = Snapshot.model_validate(b.model_dump() | {'environment': b.environment | {'python': '3.12'}})
     sampled = capture(q, case_id=b.case_id, shots=20)
+    other_factory = b.model_copy(update={'factory': 'private-source.py:second'})
     return [
         compare(b, b, policy), compare(b, c, policy), compare(b, missing, policy),
         compare(b, incompatible, policy), compare(b, not_executed(b.case_id, 'ERROR', 'secret-error'), policy),
         compare(b, not_executed(b.case_id, 'NOT_RUN', 'secret-reason'), policy),
         compare(sampled, sampled, policy),
+        compare(b, other_factory, policy),
+        compare(b, other_factory, policy.model_copy(update={'changed_axes': ['qiskit']})),
     ]
 
 
@@ -37,7 +40,7 @@ def test_allowlisted_summaries_keep_all_six_verdicts_and_match_typescript():
     summaries = [prepare_summary(x) for x in originals]
     assert {s['verdict'] for s in summaries} == {'WITHIN_POLICY', 'REGRESSION', 'INCONCLUSIVE', 'INCOMPATIBLE', 'ERROR', 'NOT_RUN'}
     serialized = json.dumps(summaries)
-    for secret in ('private-customer-case', 'secret-error', 'secret-reason', 'probabilities', 'factory', 'recorded_at'):
+    for secret in ('private-customer-case', 'private-source.py', 'secret-error', 'secret-reason', 'probabilities', 'factory', 'recorded_at'):
         assert secret not in serialized
     root = Path(__file__).resolve().parents[2]
     # CI builds dist explicitly. Missing TypeScript verification is a failure.

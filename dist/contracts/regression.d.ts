@@ -283,7 +283,7 @@ export declare const RegressionSummarySchema: z.ZodObject<{
         max_total_variation: number | null;
         family_alpha: number;
     }>;
-    changed_fields: z.ZodArray<z.ZodEnum<["source_commit", "source_dirty", "case_id", "circuit_sha256", "factory_sha256", "environment.python", "environment.system", "environment.machine", "environment.kernel", "environment.ketqat_capture", "environment.qiskit", "environment.numpy", "environment.scipy", "environment.ketqat", "conditions.execution", "conditions.initial_state", "conditions.measurement", "conditions.bit_order", "conditions.backend", "conditions.noise", "conditions.qubits", "conditions.seed", "conditions.shots", "conditions.optimization_level", "conditions.basis_gates"]>, "many">;
+    changed_fields: z.ZodArray<z.ZodEnum<["source_commit", "source_dirty", "case_id", "circuit_sha256", "factory", "factory_sha256", "environment.python", "environment.system", "environment.machine", "environment.kernel", "environment.ketqat_capture", "environment.qiskit", "environment.numpy", "environment.scipy", "environment.ketqat", "conditions.execution", "conditions.initial_state", "conditions.measurement", "conditions.bit_order", "conditions.backend", "conditions.noise", "conditions.qubits", "conditions.seed", "conditions.shots", "conditions.optimization_level", "conditions.basis_gates"]>, "many">;
     resources: z.ZodObject<{
         baseline: z.ZodNullable<z.ZodEffects<z.ZodObject<{
             depth: z.ZodOptional<z.ZodNumber>;
@@ -417,7 +417,7 @@ export declare const RegressionSummarySchema: z.ZodObject<{
         max_total_variation: number | null;
         family_alpha: number;
     };
-    changed_fields: ("case_id" | "circuit_sha256" | "conditions.backend" | "conditions.basis_gates" | "conditions.bit_order" | "conditions.execution" | "conditions.initial_state" | "conditions.measurement" | "conditions.noise" | "conditions.optimization_level" | "conditions.qubits" | "conditions.seed" | "conditions.shots" | "environment.kernel" | "environment.ketqat" | "environment.ketqat_capture" | "environment.machine" | "environment.numpy" | "environment.python" | "environment.qiskit" | "environment.scipy" | "environment.system" | "factory_sha256" | "source_commit" | "source_dirty")[];
+    changed_fields: ("case_id" | "circuit_sha256" | "conditions.backend" | "conditions.basis_gates" | "conditions.bit_order" | "conditions.execution" | "conditions.initial_state" | "conditions.measurement" | "conditions.noise" | "conditions.optimization_level" | "conditions.qubits" | "conditions.seed" | "conditions.shots" | "environment.kernel" | "environment.ketqat" | "environment.ketqat_capture" | "environment.machine" | "environment.numpy" | "environment.python" | "environment.qiskit" | "environment.scipy" | "environment.system" | "factory" | "factory_sha256" | "source_commit" | "source_dirty")[];
     resources: {
         baseline: {
             depth?: number | undefined;
@@ -473,7 +473,7 @@ export declare const RegressionSummarySchema: z.ZodObject<{
         max_total_variation: number | null;
         family_alpha: number;
     };
-    changed_fields: ("case_id" | "circuit_sha256" | "conditions.backend" | "conditions.basis_gates" | "conditions.bit_order" | "conditions.execution" | "conditions.initial_state" | "conditions.measurement" | "conditions.noise" | "conditions.optimization_level" | "conditions.qubits" | "conditions.seed" | "conditions.shots" | "environment.kernel" | "environment.ketqat" | "environment.ketqat_capture" | "environment.machine" | "environment.numpy" | "environment.python" | "environment.qiskit" | "environment.scipy" | "environment.system" | "factory_sha256" | "source_commit" | "source_dirty")[];
+    changed_fields: ("case_id" | "circuit_sha256" | "conditions.backend" | "conditions.basis_gates" | "conditions.bit_order" | "conditions.execution" | "conditions.initial_state" | "conditions.measurement" | "conditions.noise" | "conditions.optimization_level" | "conditions.qubits" | "conditions.seed" | "conditions.shots" | "environment.kernel" | "environment.ketqat" | "environment.ketqat_capture" | "environment.machine" | "environment.numpy" | "environment.python" | "environment.qiskit" | "environment.scipy" | "environment.system" | "factory" | "factory_sha256" | "source_commit" | "source_dirty")[];
     resources: {
         baseline: {
             depth?: number | undefined;

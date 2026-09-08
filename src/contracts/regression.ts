@@ -32,7 +32,7 @@ export const RegressionPolicySchema = z.object({
 export type RegressionPolicy = z.infer<typeof RegressionPolicySchema>
 
 const ChangedFieldSchema = z.enum([
-  "source_commit", "source_dirty", "case_id", "circuit_sha256", "factory_sha256",
+  "source_commit", "source_dirty", "case_id", "circuit_sha256", "factory", "factory_sha256",
   "environment.python", "environment.system", "environment.machine", "environment.kernel",
   "environment.ketqat_capture", "environment.qiskit", "environment.numpy", "environment.scipy", "environment.ketqat",
   "conditions.execution", "conditions.initial_state", "conditions.measurement", "conditions.bit_order",
@@ -50,7 +50,7 @@ export const RegressionSummarySchema = z.object({
   baseline_status: status,
   candidate_status: status,
   policy: RegressionPolicySchema,
-  changed_fields: z.array(ChangedFieldSchema).max(29),
+  changed_fields: z.array(ChangedFieldSchema).max(30),
   resources: z.object({baseline: resources.nullable(), candidate: resources.nullable()}).strict(),
   distribution: z.discriminatedUnion("method", [
     z.object({
@@ -90,7 +90,7 @@ export function inspectRegressionSummary(input: unknown): {summary: RegressionSu
   const policy = parseRegressionPolicy(summary.policy)
   if (new Set(summary.changed_fields).size !== summary.changed_fields.length) throw new Error("Repeated comparison field.")
   const permitted = new Set<string>()
-  if (policy.changed_axes.includes("source_commit")) ["source_commit", "source_dirty", "factory_sha256"].forEach(x => permitted.add(x))
+  if (policy.changed_axes.includes("source_commit")) ["source_commit", "source_dirty", "factory", "factory_sha256"].forEach(x => permitted.add(x))
   if (policy.changed_axes.includes("circuit")) permitted.add("circuit_sha256")
   if (policy.changed_axes.includes("qiskit")) permitted.add("environment.qiskit")
   let verdict: RegressionVerdict | undefined
