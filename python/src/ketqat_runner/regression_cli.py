@@ -48,7 +48,11 @@ def worker(factory: str, case_id: str, output: Path, seed: int, level: int, shot
             'factory': factory, 'factory_sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
     except Exception as exc:
         snapshot = not_executed(case_id, 'ERROR', f'Local factory failed ({type(exc).__name__}); inspect your factory locally.')
-    save_snapshot(snapshot, output)
+    try:
+        save_snapshot(snapshot, output)
+    except ValueError:
+        save_snapshot(not_executed(case_id, 'ERROR',
+            'Snapshot serialization or 2 MiB size limit failed; reduce the local circuit and retry.'), output)
 
 
 def run_capture(args) -> int:
@@ -73,7 +77,7 @@ def run_capture(args) -> int:
                     process.wait()
                     raise
             if code != 0 or not output.exists():
-                snapshot = not_executed(args.case_id, 'ERROR', 'Local factory process failed without a valid snapshot.')
+                snapshot = not_executed(args.case_id, 'ERROR', 'Local factory process failed without a valid snapshot; check local disk space, permissions and capture size.')
             else:
                 snapshot = Snapshot.model_validate(load_json(output))
         except subprocess.TimeoutExpired:

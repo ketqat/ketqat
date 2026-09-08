@@ -26,7 +26,7 @@ jobs:
           python-version: '3.11'
       - name: Install the bounded regression environment
         run: |
-          python -m pip install --require-hashes -r requirements-regression-py311.txt
+          python -m pip install --require-hashes -r requirements-regression-base-py311.txt
           python -m pip install --no-deps --require-hashes -r "requirements-regression-qiskit-${{ matrix.qiskit }}.txt"
           python -m pip install --no-deps ./python
           python -m pip install --require-hashes -r requirements-regression-tests-py311.txt
