@@ -244,6 +244,8 @@ def test_sample_runs_real_simulation_and_returns_regression(tmp_path):
     report=json.loads((tmp_path/'sample/report/report.json').read_text())
     assert report['verdict'] == 'REGRESSION'
     assert 'Intentional' in report['sample']
+    assert (tmp_path/'sample').stat().st_mode & 0o077 == 0
+    assert all(path.stat().st_mode & 0o077 == 0 for path in (tmp_path/'sample').rglob('*'))
 
 
 @pytest.mark.parametrize('contents,worker_exit', [
