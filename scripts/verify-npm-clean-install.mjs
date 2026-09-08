@@ -156,7 +156,10 @@ try {
 
   const forbidden = manifest.files
     .map(({ path }) => path)
-    .filter((path) => /(^|\/)(?:python|tests?|\.pytest_cache|__pycache__|coverage|node_modules)(\/|$)|\.py[co]$/i.test(path))
+    // Exact source exercise also required by verify-package-contents.mjs.
+    // This does not allow the SDK test suite or a cache beside the example.
+    .filter((path) => path !== "examples/regression/sample-project/tests/circuits.py" &&
+      /(^|\/)(?:python|tests?|\.pytest_cache|__pycache__|coverage|node_modules)(\/|$)|\.py[co]$/i.test(path))
   if (forbidden.length > 0) {
     throw new Error(`Tarball contains forbidden paths: ${forbidden.join(", ")}`)
   }

@@ -30,6 +30,13 @@ if (!manifest || !Array.isArray(manifest.files)) {
 const files = manifest.files.map(({ path, size }) => ({ path, size }))
 const filePaths = new Set(files.map(({ path }) => path))
 
+// Deliberately shipped source exercise, not the SDK's test suite. Keep exact
+// paths so caches, extra test fixtures and arbitrary Python files stay blocked.
+const sourceExerciseFiles = new Set([
+  "examples/regression/sample-project/README.md",
+  "examples/regression/sample-project/tests/circuits.py",
+])
+
 const requiredFiles = [
   "LICENSE",
   "README.md",
@@ -58,6 +65,8 @@ const requiredFiles = [
   // install time rather than at build time, which is the worst moment to find out.
   "dist/client/token.js",
   "dist/client/token.d.ts",
+  ...sourceExerciseFiles,
+  "examples/regression/sample-project/policy.json",
 ]
 
 // CITATION.cff ships so an installed copy can be cited; the repository had one and none
@@ -65,6 +74,7 @@ const requiredFiles = [
 const allowedRootFiles = new Set(["LICENSE", "README.md", "package.json", "CITATION.cff"])
 const isAllowedPackageFile = (path) =>
   allowedRootFiles.has(path) ||
+  sourceExerciseFiles.has(path) ||
   (path.startsWith("dist/") && /(?:\.js|\.js\.map|\.d\.ts|\.d\.ts\.map)$/.test(path)) ||
   (path.startsWith("schemas/") && path.endsWith(".schema.json")) ||
   // The QEC code catalog is generated data rather than a schema, and ships for
@@ -87,7 +97,7 @@ const unexpectedFiles = files
   .filter((path) => !isAllowedPackageFile(path))
 const forbiddenFiles = files
   .map(({ path }) => path)
-  .filter((path) => forbiddenPath.test(path))
+  .filter((path) => forbiddenPath.test(path) && !sourceExerciseFiles.has(path))
 const oversizedFiles = files.filter(({ size }) => size > 1_000_000)
 
 const failures = []

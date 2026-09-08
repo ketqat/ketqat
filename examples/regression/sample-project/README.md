@@ -2,7 +2,8 @@
 
 This directory is a small project you can copy into an existing test repository.
 It is part of the Apache-2.0 KetQat SDK, not a new package or a claim of a customer
-incident. Install the SDK with the [source quickstart](../../../docs/regression-quickstart.md).
+incident. Install the SDK with the
+[source quickstart](https://github.com/ketqat/ketqat-sdk/blob/e5d37278155058944faf7b32526d8dc787065281/docs/regression-quickstart.md).
 
 From this directory, capture `tests/circuits.py:prepare_state` as your baseline:
 
