@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from jsonschema import Draft7Validator
+from jsonschema.exceptions import ValidationError
 
 from .regression import Policy, Snapshot, compare, load_json
 
@@ -43,7 +44,12 @@ def _strict_json(payload: bytes, label: str):
 
 def validate_summary(payload: dict) -> None:
     schema = json.loads(files('ketqat_runner').joinpath('schemas/regression-summary.schema.json').read_text())
-    Draft7Validator(schema).validate(payload)
+    try:
+        Draft7Validator(schema).validate(payload)
+    except ValidationError:
+        raise RegressionUploadError(
+            'Summary does not match the upload schema. Regenerate the preview from the full local report, then review and confirm its new SHA256.'
+        ) from None
 
 
 def prepare_summary(local_report: dict) -> dict:

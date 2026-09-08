@@ -206,3 +206,25 @@ def test_cli_reports_authored_json_failures_without_leaking_input(tmp_path, monk
     monkeypatch.setattr(regression_upload, 'upload', untrusted)
     assert run(args) == 4
     assert 'private-input-value' not in capsys.readouterr().err
+
+
+def test_cli_invalid_summary_explains_recovery_without_network_or_private_values(tmp_path, monkeypatch, capsys):
+    from types import SimpleNamespace
+    from ketqat_runner import regression_upload
+    from ketqat_runner.regression_cli import run
+
+    def network_forbidden(*args):
+        pytest.fail('Invalid summary must be rejected before creating a network client')
+    monkeypatch.setattr(regression_upload, 'build_opener', network_forbidden)
+    summary = prepare_summary(reports()[1])
+    summary['verdict'] = 'private-customer-value'
+    path = tmp_path / 'invalid-summary.json'
+    path.write_text(json.dumps(summary))
+    result = run(SimpleNamespace(regression_command='upload', summary=path,
+        confirm_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        repository='repository-test', server='https://ketqat.com'))
+    assert result == 4
+    error = capsys.readouterr().err
+    assert 'Regenerate the preview from the full local report' in error
+    assert 'Local comparison verdict is unchanged' in error
+    assert 'private-customer-value' not in error
