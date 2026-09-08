@@ -42,6 +42,8 @@ the payload at 100 KiB and response at 8 KiB, and makes at most three attempts w
 10-second timeouts and 2/4-second delays for temporary errors. Retries carry the
 same idempotency key. `--server` explicitly selects a different HTTPS origin;
 HTTP is accepted only for loopback development. Use a credential for that server.
+Requests identify themselves as `KetQat-SDK regression-upload` in the User-Agent
+header; they do not impersonate a browser or include environment details there.
 
 `UPLOAD: STORED` or `DUPLICATE` means the server acknowledged the original verdict.
 Upload exit 0 describes transport success; it never converts REGRESSION into a
