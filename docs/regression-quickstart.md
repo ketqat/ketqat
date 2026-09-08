@@ -95,6 +95,13 @@ paths/test names. **Inspect before sharing.** Nothing is uploaded automatically.
 If `GITHUB_STEP_SUMMARY` is set, the CLI appends its concise result there; CI
 must honor its exit code. Do not add `|| true` or call uncertainty success.
 
+For a copyable repository exercise, use the
+[two-qubit sample project](../examples/regression/sample-project/README.md).
+Its [Actions workflow](../examples/regression/github-actions.yml) installs a
+pinned SDK with hashed dependencies and captures both PR revisions on the same
+runner. The policy comes from the reviewed base. No missing requirements file,
+public package publication or upload secret is assumed.
+
 ## Scientific scope and limits
 
 Supported: Qiskit 2.x, 1–12 qubits, at most 100,000 instructions, bound standard
